@@ -8,21 +8,21 @@ const port = 3001;
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/');
+        cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
     }
-  });
-  
-  const upload = multer({ storage: storage });
+});
+
+const upload = multer({ storage: storage });
 
 // Middleware para analizar el cuerpo de las solicitudes entrantes como JSON
 app.use(express.json());
 
 // Construir la ruta absoluta al archivo de base de datos
-const dbPath = path.join(__dirname, 'TrabajoTerminal.accdb');
+const dbPath = path.join(__dirname, 'PoliBuy.accdb');
 
 // Cadena de conexión DSN-less
 const connectionString = `Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=${dbPath};`;
@@ -38,6 +38,127 @@ app.use((req, res, next) => {
 // Middleware para servir archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.listen(port, () => {
+    console.log(`El servidor está corriendo en http://localhost:${port}`);
+});
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Error interno del servidor');
+});
+
+// Endpoint para registrar un usuario
+app.post('/registerUser', async (req, res) => {
+    try {
+        const { Nombre, Correo, Contraseña, Tipo, Telefono } = req.body;
+        const connection = await odbc.connect(connectionString);
+        const query = " INSERT INTO Usuarios (Nombre, Correo, Contraseña, Tipo, Telefono) VALUES ('" + Nombre + "', '" + Correo + "', '" + Contraseña + "', '" + Tipo + "', '" + Telefono + "')";
+
+        await connection.query(query);
+        await connection.close();
+
+        res.status(201).json({ message: 'Usuario registrado correctamente' });
+    } catch (err) {
+        console.error('Error al registrar usuario:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para autenticar un usuario
+app.post('/login', async (req, res) => {
+    const { Correo, Contraseña } = req.body;
+
+    try {
+        const connection = await odbc.connect(connectionString);
+        const query = "SELECT Tipo, Nombre FROM Usuarios WHERE Correo = '" + Correo + "' AND Contraseña = '" + Contraseña + "'";
+        const result = await connection.query(query);
+
+        if (result.length > 0) {
+            const userRole = result[0].Tipo;
+            res.json({ tipo: userRole });
+        } else {
+            res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        await connection.close();
+    } catch (error) {
+        console.error('Error al autenticar usuario:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// Endpoint para devolver los ultimos 5 productos agregados
+app.get('/productsDashboard', async (req, res) => {
+    try {
+        const connection = await odbc.connect(connectionString);
+
+        // Consulta para obtener los últimos 5 productos
+        const query = 'SELECT TOP 5 * FROM Productos ORDER BY ID DESC';
+        console.log(query);
+        const result = await connection.query(query);
+
+        res.json(result);
+        await connection.close();
+    } catch (err) {
+        console.error('Error en la consulta:', err.message);
+        res.status(500).send(err.message);
+    }
+});
+
+// Endpoint para devolver los productos con ofertas
+app.get('/productsOffers', async (req, res) => {
+    try {
+        const connection = await odbc.connect(connectionString);
+
+        // Consulta para obtener los últimos 5 productos
+        const result = await connection.query('SELECT * FROM Productos WHERE Oferta != 0');
+
+        res.json(result);
+        await connection.close();
+    } catch (err) {
+        console.error('Error en la consulta:', err.message);
+        res.status(500).send(err.message);
+    }
+});
+
+// Endpoint para agregar un producto
+app.post('/createProduct', async (req, res) => {
+    try {
+        const { Nombre, Precio, Descripcion, Cantidad, Categoria, Fecha } = req.body;
+        const connection = await odbc.connect(connectionString);
+        const query = " INSERT INTO Productos (Nombre, Precio, Descripcion, Cantidad, Categoria, Fecha) VALUES ('" + Nombre + "', '" + Precio + "', '" + Descripcion + "', '" + Cantidad + "', '" + Categoria + "', '" + Fecha + "')";
+
+        await connection.query(query);
+        await connection.close();
+
+        res.status(201).json({ message: 'Usuario registrado correctamente' });
+    } catch (err) {
+        console.error('Error al registrar usuario:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para editar un producto
+app.put('/editProduct/:id', async (req, res) => {
+    const { id } = req.params;
+    const { Nombre, Precio, Descripcion, Cantidad, Oferta, Categoria, Ventas, Color, Tamaño } = req.body;
+
+    try {
+        const connection = await odbc.connect(connectionString);
+
+        // Consulta para actualizar el producto con el ID especificado
+        const query = `UPDATE Productos SET Nombre = '${Nombre}', Precio = '${Precio}', Descripcion = '${Descripcion}', Cantidad = '${Cantidad}', Oferta = '${Oferta}', Categoria = '${Categoria}', Ventas = '${Ventas}', Color = '${Color}', Tamaño = '${Tamaño}' WHERE id_producto = ${id}`;
+
+        await connection.query(query);
+        res.json({ message: 'Producto actualizado correctamente' });
+        await connection.close();
+    } catch (err) {
+        console.error('Error al actualizar el producto:', err.message);
+        res.status(500).send(err.message);
+    }
+});
+
+/*
 app.get('/data', async (req, res) => {
     try {
         //console.log('Intentando conectar a la base de datos...');
@@ -640,3 +761,4 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Error interno del servidor');
 });
+*/
