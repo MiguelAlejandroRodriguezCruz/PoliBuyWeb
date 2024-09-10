@@ -12,18 +12,18 @@ class Home extends Component {
             <div id='home'>
                 <Slider
                     title="Bienvenido al master de React JS"
-                    btn={buttonString} 
+                    btn={buttonString}
                     size="slider-big<"
                 />
                 <div className="center">
                     <div id='content'>
                         <h1 className='subheader'>Ultimos articulos</h1>
                         <Articles
-                            home = "true"
+                            home="true"
                         />
                     </div>
-                    <Sidebar 
-                        
+                    <Sidebar
+
                     />
                 </div>
 

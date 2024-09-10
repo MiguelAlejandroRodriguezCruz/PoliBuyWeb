@@ -13,17 +13,18 @@ class Articles extends Component {
     componentDidMount() {
         var home = this.props.home;
         var search = this.props.search;
-        if(home === 'true'){
+        if (home === 'true') {
             this.getLastArticles();
-        }else if(search && search !== null && search !== undefined){
+        } else if (search && search !== null && search !== undefined) {
             this.getArticlesBySearch(search);
-        }else{
+        } else {
             this.getArticles();
         }
-        
+
     }
 
     getArticlesBySearch = (searched) => {
+        /*
         axios.get(this.url + "search/"+searched)
             .then(res => {
                
@@ -39,9 +40,11 @@ class Articles extends Component {
                     status: 'success'
                 });
             });
+            */
     }
 
     getLastArticles = () => {
+        /*
         axios.get(this.url + "articles/last")
             .then(res => {
                 this.setState({
@@ -49,9 +52,11 @@ class Articles extends Component {
                     status: 'success'
                 });
             });
+            */
     }
 
     getArticles = () => {
+        /*
         axios.get(this.url + "articles")
             .then(res => {
                 this.setState({
@@ -59,6 +64,7 @@ class Articles extends Component {
                     status: 'success'
                 });
             });
+            */
     }
     state = {
         articles: [],
@@ -74,7 +80,7 @@ class Articles extends Component {
 
                         <div className="image-wrap">
                             {article.image !== null ?
-                                (<img src={this.url + 'get-image/' + article.image} alt={article.title} />):
+                                (<img src={this.url + 'get-image/' + article.image} alt={article.title} />) :
                                 (<img src={imagen} alt={article.title} />)
                             }
                         </div>
@@ -83,7 +89,7 @@ class Articles extends Component {
                         <span className="date">
                             <Moment locale='es' fromNow>{article.date}</Moment>
                         </span>
-                        <Link to={'/blog/articulo/'+article._id}>Leer más</Link>
+                        <Link to={'/blog/articulo/' + article._id}>Leer más</Link>
                         <div className="clearfix"></div>
                     </article>
                 )
