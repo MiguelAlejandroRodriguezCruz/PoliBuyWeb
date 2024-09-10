@@ -6,13 +6,11 @@ import Articles from './Articles';
 class Home extends Component {
 
     render() {
-        var buttonString = "Ir al blog";
 
         return (
             <div id='home'>
                 <Slider
-                    title="Bienvenido al master de React JS"
-                    btn={buttonString}
+                    title="Bienvenido a PoliBuy"
                     size="slider-big<"
                 />
                 <div className="center">
