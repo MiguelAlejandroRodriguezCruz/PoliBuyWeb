@@ -45,17 +45,17 @@ const RegisterForm = () => {
         <div className="form-container">
             <h2>Registrarse</h2>
             <form onSubmit={handleRegister}>
-                <label htmlFor="Name">Nombre</label>
-                <input type="text" id="Name" name="Name" value={formData.firstName} onChange={handleInputChange} required />
+                <label htmlFor="Nombre">Nombre</label>
+                <input type="text" id="Nombre" name="Nombre" value={formData.Nombre} onChange={handleInputChange} required />
 
-                <label htmlFor="email">Correo electrónico</label>
-                <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} required />
+                <label htmlFor="Correo">Correo electrónico</label>
+                <input type="email" id="Correo" name="Correo" value={formData.Correo} onChange={handleInputChange} required />
 
-                <label htmlFor="password">Contraseña</label>
-                <input type="password" id="password" name="password" value={formData.Contraseña} onChange={handleInputChange} required />
+                <label htmlFor="Contraseña">Contraseña</label>
+                <input type="password" id="Contraseña" name="Contraseña" value={formData.Contraseña} onChange={handleInputChange} required />
 
-                <label htmlFor="phoneNumber">Numero de telefono</label>
-                <input type="text" id="phoneNumber" name="phoneNumber" value={formData.Telefono} onChange={handleInputChange} required />
+                <label htmlFor="Telefono">Número de teléfono</label>
+                <input type="text" id="Telefono" name="Telefono" value={formData.Telefono} onChange={handleInputChange} required />
 
                 <button type="submit">Registrarse</button>
             </form>
@@ -65,3 +65,4 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
+
