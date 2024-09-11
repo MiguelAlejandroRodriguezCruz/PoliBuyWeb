@@ -52,7 +52,7 @@ app.post('/registerUser', async (req, res) => {
     try {
         const { Nombre, Correo, Contraseña, Tipo, Telefono } = req.body;
         const connection = await odbc.connect(connectionString);
-        const query = " INSERT INTO Usuarios (Nombre, Correo, Contraseña, Tipo, Telefono) VALUES ('" + Nombre + "', '" + Correo + "', '" + Contraseña + "', '" + Tipo + "', '" + Telefono + "')";
+        const query = " INSERT INTO Usuarios (Nombre, Correo, Contraseña, Tipo, Telefono) VALUES ('" + Nombre + "', '" + Correo + "', '" + Contraseña + "', 'Cliente', '" + Telefono + "')";
 
         await connection.query(query);
         await connection.close();
@@ -71,7 +71,6 @@ app.post('/login', async (req, res) => {
     try {
         const connection = await odbc.connect(connectionString);
         const query = "SELECT Tipo, Nombre FROM Usuarios WHERE Correo = '" + email + "' AND Contraseña = '" + password + "'";
-        console.log(query);
         const result = await connection.query(query);
 
         if (result.length > 0) {

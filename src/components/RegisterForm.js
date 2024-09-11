@@ -34,7 +34,7 @@ const RegisterForm = () => {
             const data = await response.json();
             console.log('Usuario registrado:', data); // Puedes manejar esta respuesta según tus necesidades
 
-            navigate('/home'); // Redirigir después de registro exitoso
+            navigate('/'); // Redirigir después de registro exitoso
         } catch (error) {
             console.error('Error al registrar usuario:', error);
             // Puedes agregar lógica para manejar el error aquí
