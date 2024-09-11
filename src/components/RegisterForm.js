@@ -19,7 +19,7 @@ const RegisterForm = () => {
         console.log(formData);
 
         try {
-            const response = await fetch('http://localhost:3001/register', {
+            const response = await fetch('http://localhost:3001/registerUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

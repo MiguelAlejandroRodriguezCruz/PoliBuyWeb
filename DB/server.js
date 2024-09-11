@@ -66,11 +66,12 @@ app.post('/registerUser', async (req, res) => {
 
 // Endpoint para autenticar un usuario
 app.post('/login', async (req, res) => {
-    const { Correo, Contraseña } = req.body;
+    const { email, password } = req.body;
 
     try {
         const connection = await odbc.connect(connectionString);
-        const query = "SELECT Tipo, Nombre FROM Usuarios WHERE Correo = '" + Correo + "' AND Contraseña = '" + Contraseña + "'";
+        const query = "SELECT Tipo, Nombre FROM Usuarios WHERE Correo = '" + email + "' AND Contraseña = '" + password + "'";
+        console.log(query);
         const result = await connection.query(query);
 
         if (result.length > 0) {
