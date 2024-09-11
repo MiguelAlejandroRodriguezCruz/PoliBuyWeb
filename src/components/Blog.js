@@ -15,8 +15,8 @@ class Blog extends Component {
                 />
                 <div className="center">
                     <div id='content'>
-                        {/**Listado de articulos del API */}
-                        <Articles/>
+                        {/**Listado de Productos con descuento  */}
+
                     </div>
                     <Sidebar
                         blog="true"
