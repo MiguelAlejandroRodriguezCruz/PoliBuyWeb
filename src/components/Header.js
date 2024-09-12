@@ -22,7 +22,7 @@ class Header extends Component {
                         <NavLink to="/login" style={styles.iconLink}>
                             <span role="img" aria-label="login">👤</span>
                         </NavLink>
-                        <NavLink to="/carrito" style={styles.iconLink}>
+                        <NavLink to="/ShopCart" style={styles.iconLink}>
                             <span role="img" aria-label="carrito">🛒</span>
                             <span style={styles.counter}>2</span>
                         </NavLink>

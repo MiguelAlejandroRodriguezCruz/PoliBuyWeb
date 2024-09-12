@@ -44,12 +44,12 @@ const Router = () => {
                     <Route path="/RegisterForm" element={<RegisterForm />} />
                     <Route exact path='/home' element={<Home />} />
                     <Route exact path='/' element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/home"} />} />
-                    <Route exact path='/ofertas' element={<Ofertas />} />
+                    <Route exact path='/Ofertas' element={<Ofertas />} />
                     <Route exact path='/ShopCart' element={<ShopCart />} />
-                    <Route exact path='/ofertas/articulo/:id' element={<Article />} />
-                    <Route exact path='/ofertas/busqueda/:search' element={<Search />} />
-                    <Route exact path='/ofertas/crear' element={<CreateArticle />} />
-                    <Route exact path='/ofertas/editar/:id' element={<EditArticle />} />
+                    <Route exact path='/Ofertas/articulo/:id' element={<Article />} />
+                    <Route exact path='/Ofertas/busqueda/:search' element={<Search />} />
+                    <Route exact path='/Ofertas/crear' element={<CreateArticle />} />
+                    <Route exact path='/Ofertas/editar/:id' element={<EditArticle />} />
                     <Route path='*' element={<Error />} />
                 </Routes>
             </Layout>

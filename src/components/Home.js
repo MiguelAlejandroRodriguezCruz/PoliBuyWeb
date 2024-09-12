@@ -18,10 +18,10 @@ const Home = () => {
                     Encuentra tus productos favoritos en nuestra aplicación.
                 </p>
                 <div style={styles.buttonContainer}>
-                    <button style={styles.button} onClick={() => handleNavigation("/ofertas")}>
+                    <button style={styles.button} onClick={() => handleNavigation("/Ofertas")}>
                         OFERTAS DE TIENDA
                     </button>
-                    <button style={styles.button} onClick={() => handleNavigation("/productos")}>
+                    <button style={styles.button} onClick={() => handleNavigation("/Categorias")}>
                         TODOS LOS PRODUCTOS
                     </button>
                 </div>
