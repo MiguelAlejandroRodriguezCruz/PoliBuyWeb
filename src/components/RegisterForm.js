@@ -32,37 +32,37 @@ const RegisterForm = () => {
             }
 
             const data = await response.json();
-            console.log('Usuario registrado:', data); // Puedes manejar esta respuesta según tus necesidades
+            console.log('Usuario registrado:', data);
 
             navigate('/'); // Redirigir después de registro exitoso
         } catch (error) {
             console.error('Error al registrar usuario:', error);
-            // Puedes agregar lógica para manejar el error aquí
         }
     };
 
     return (
         <div className="form-container">
-            <h2>Registrarse</h2>
-            <form onSubmit={handleRegister}>
+            <h2 className="form-title">Registrarse</h2>
+            <form onSubmit={handleRegister} className="register-form">
                 <label htmlFor="Nombre">Nombre</label>
-                <input type="text" id="Nombre" name="Nombre" value={formData.Nombre} onChange={handleInputChange} required />
+                <input type="text" id="Nombre" name="Nombre" value={formData.Nombre} onChange={handleInputChange} required className="form-input" />
 
                 <label htmlFor="Correo">Correo electrónico</label>
-                <input type="email" id="Correo" name="Correo" value={formData.Correo} onChange={handleInputChange} required />
+                <input type="email" id="Correo" name="Correo" value={formData.Correo} onChange={handleInputChange} required className="form-input" />
 
                 <label htmlFor="Contraseña">Contraseña</label>
-                <input type="password" id="Contraseña" name="Contraseña" value={formData.Contraseña} onChange={handleInputChange} required />
+                <input type="password" id="Contraseña" name="Contraseña" value={formData.Contraseña} onChange={handleInputChange} required className="form-input" />
 
                 <label htmlFor="Telefono">Número de teléfono</label>
-                <input type="text" id="Telefono" name="Telefono" value={formData.Telefono} onChange={handleInputChange} required />
+                <input type="text" id="Telefono" name="Telefono" value={formData.Telefono} onChange={handleInputChange} required className="form-input" />
 
-                <button type="submit">Registrarse</button>
+                <button type="submit" className="register-button">Registrarse</button>
             </form>
-            <p>¿Ya tienes cuenta? <a href="/LoginForm">Iniciar Sesión</a></p>
+            <p className="login-link">
+                ¿Ya tienes cuenta? <a href="/LoginForm">Iniciar Sesión</a>
+            </p>
         </div>
     );
 };
 
 export default RegisterForm;
-

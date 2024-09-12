@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/images/Logo.jpeg';
 
 const LoginForm = ({ handleLogin }) => {
     const [email, setEmail] = useState('');
@@ -33,17 +34,21 @@ const LoginForm = ({ handleLogin }) => {
     };
 
     return (
-        <div className="form-container">
-            <h2>Iniciar Sesión</h2>
-            <form onSubmit={onSubmit}>
-                <label htmlFor="email">Email</label>
+        <div className="login-form-container">
+            <div className="login-header">
+                <img src="../src/assets/images/Logo.jpeg" alt="Logotipo" className="login-logo" />
+                <h2 className="login-title">Polibuy</h2>
+            </div>
+            <form onSubmit={onSubmit} className="login-form">
+                <label htmlFor="email">Correo electrónico</label>
                 <input
-                    type="text"
+                    type="email"
                     id="email"
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="login-input"
                 />
 
                 <label htmlFor="password">Contraseña</label>
@@ -54,15 +59,22 @@ const LoginForm = ({ handleLogin }) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="login-input"
                 />
 
                 {error && <p className="error-message">{error}</p>}
 
-                <button type="submit">Ingresar</button>
+                <button type="submit" className="login-button">Entrar</button>
             </form>
-            <p>¿No tienes cuenta? <a href="/RegisterForm">Registrarse</a></p>
+            <p className="login-footer">
+                ¿No tienes cuenta? <a href="/RegisterForm" className="register-link">Registrarse</a>
+            </p>
+            <p className="forgot-password">
+                <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+            </p>
         </div>
     );
 };
 
 export default LoginForm;
+
