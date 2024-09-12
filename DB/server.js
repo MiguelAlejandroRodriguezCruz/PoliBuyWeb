@@ -111,7 +111,7 @@ app.get('/productsOffers', async (req, res) => {
         const connection = await odbc.connect(connectionString);
 
         // Consulta para obtener los últimos 5 productos
-        const result = await connection.query('SELECT * FROM Productos WHERE Oferta != 0');
+        const result = await connection.query('SELECT * FROM Productos WHERE Oferta <> 0');
 
         res.json(result);
         await connection.close();

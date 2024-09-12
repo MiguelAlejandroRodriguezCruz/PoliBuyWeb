@@ -1,34 +1,38 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Slider from './Slider';
 import Sidebar from './Sidebar';
+import { useNavigate } from 'react-router-dom';
 
-class Home extends Component {
+const Home = () => {
+    const navigate = useNavigate();
 
-    render() {
-        return (
-            <div id='home'>
-                <Slider
-                    title="Bienvenido a PoliBuy"
-                    size="slider-big"
-                />
-                <div className="center" style={styles.center}>
-                    <p style={styles.welcomeText}>
-                        Encuentra tus productos favoritos en nuestra aplicación.
-                    </p>
-                    <div style={styles.buttonContainer}>
-                        <button style={styles.button}>OFERTAS DE TIENDA</button>
-                        <button style={styles.button}>TODOS LOS PRODUCTOS</button>
-                    </div>
-                </div>
-                <div className="center">
-                    <div id='content'>
-                    </div>
-                    <Sidebar />
+    const handleNavigation = (path) => {
+        navigate(path);
+    };
+
+    return (
+        <div id='home'>
+            <Slider size="slider-big" />
+            <div className="center" style={styles.center}>
+                <p style={styles.welcomeText}>
+                    Encuentra tus productos favoritos en nuestra aplicación.
+                </p>
+                <div style={styles.buttonContainer}>
+                    <button style={styles.button} onClick={() => handleNavigation("/ofertas")}>
+                        OFERTAS DE TIENDA
+                    </button>
+                    <button style={styles.button} onClick={() => handleNavigation("/productos")}>
+                        TODOS LOS PRODUCTOS
+                    </button>
                 </div>
             </div>
-        );
-    }
-}
+            <div className="center">
+                <div id='content'></div>
+                <Sidebar />
+            </div>
+        </div>
+    );
+};
 
 const styles = {
     center: {
