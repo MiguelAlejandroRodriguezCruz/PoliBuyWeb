@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
 import Blog from './components/Blog';
+import ShopCart from './components/Shopcart';
 import Search from './components/Search';
 import Article from './components/Article';
 import CreateArticle from './components/CreateArticle';
@@ -44,6 +45,7 @@ const Router = () => {
                     <Route exact path='/home' element={<Home />} />
                     <Route exact path='/' element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/home"} />} />
                     <Route exact path='/blog' element={<Blog />} />
+                    <Route exact path='/ShopCart' element={<ShopCart />} />
                     <Route exact path='/blog/articulo/:id' element={<Article />} />
                     <Route exact path='/blog/busqueda/:search' element={<Search />} />
                     <Route exact path='/blog/crear' element={<CreateArticle />} />

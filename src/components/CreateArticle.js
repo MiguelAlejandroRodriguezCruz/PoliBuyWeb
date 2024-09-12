@@ -1,26 +1,27 @@
 import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
-import Global from '../Global';
 import Sidebar from './Sidebar';
 import SimpleReactValidator from 'simple-react-validator';
 import swal from 'sweetalert';
 
 class CreateArticle extends Component {
 
-    url = Global.url;
     titleref = React.createRef();
-    contentref = React.createRef();
+    priceref = React.createRef();
+    descriptionref = React.createRef();
+    quantityref = React.createRef();
+    categoryref = React.createRef();
+    dateref = React.createRef();
 
     state = {
-        article: {},
+        product: {},
         status: null,
-        selectedFile: null
     };
 
     componentWillMount() {
         this.validator = new SimpleReactValidator({
-            messages:{
+            messages: {
                 required: 'Este campo es obligatorio.'
             }
         });
@@ -28,110 +29,87 @@ class CreateArticle extends Component {
 
     changeState = () => {
         this.setState({
-            article: {
-                title: this.titleref.current.value,
-                content: this.contentref.current.value
+            product: {
+                Nombre: this.titleref.current.value,
+                Precio: this.priceref.current.value,
+                Descripcion: this.descriptionref.current.value,
+                Cantidad: this.quantityref.current.value,
+                Categoria: this.categoryref.current.value,
+                Fecha: this.dateref.current.value
             }
         });
     }
 
-    saveArticle = (e) => {
+    saveProduct = (e) => {
         e.preventDefault();
-        //Rellenar state con formulario
         this.changeState();
+
         if (this.validator.allValid()) {
-            //Hacer una peticion http por POST para guardar el articulo
-            axios.post(this.url + 'save', this.state.article)
+            axios.post('http://localhost:3001/createProduct', this.state.product)
                 .then(res => {
-                    if (res.data.article) {
-                        //console.log(res.data.article._id)
-                        this.setState({
-                            article: res.data.article,
-                            status: 'waiting'
-                        });
-                        swal(
-                            'Articulo creado',
-                            'El Articulo se creo correctamente',
-                            'success'
-                        );
-                        // Subir archivo imagen
-                        if (this.state.selectedFile !== null) {
-                            //Sacar el id del articulo guardado
-                            var articleID = res.data.article._id;
-                            // Crear Form data y añadir ficheros
-                            const formData = new FormData();
-                            formData.append(
-                                'file0',
-                                this.state.selectedFile,
-                                this.state.selectedFile.name
-                            );
-                            // Peticion ajax
-                            axios.post(this.url + 'upload-image/' + articleID, formData)
-                                .then(res => {
-                                    if (res.data.article) {
-                                        this.setState({
-                                            article: res.data.article,
-                                            status: 'success'
-                                        });
-                                    } else {
-                                        this.setState({
-                                            article: res.data.article,
-                                            status: 'failed'
-                                        });
-                                    }
-                                });
-                        } else {
-                            this.setState({
-                                status: 'success'
-                            });
-                        }
+                    if (res.status === 201) {
+                        this.setState({ status: 'waiting' });
+                        swal('Producto creado', 'El producto se ha creado correctamente', 'success');
                     } else {
-                        this.setState({
-                            status: 'failed'
-                        });
+                        this.setState({ status: 'failed' });
                     }
                 });
         } else {
-            this.setState({
-                status: 'failed'
-            });
+            this.setState({ status: 'failed' });
             this.validator.showMessages();
             this.forceUpdate();
-            
         }
-
     }
 
-    fileChange = (event) => {
-        this.setState({
-            selectedFile: event.target.files[0]
-        });
-    }
+
 
     render() {
         if (this.state.status === 'success') {
-            return <Navigate to="/blog" />
+            return <Navigate to="/productos" />
         }
+
         return (
             <div className="center">
                 <section id='content'>
-                    <h1 className='subheader'>Crear Articulo</h1>
-                    <form className="mid-form" onSubmit={this.saveArticle}>
+                    <h1 className='subheader'>Crear Producto</h1>
+                    <form className="mid-form" onSubmit={this.saveProduct}>
                         <div className='form-group'>
-                            <label htmlFor='title'>Titulo</label>
+                            <label htmlFor='title'>Nombre del Producto</label>
                             <input type='text' name='title' ref={this.titleref} onChange={this.changeState} />
-                            {this.validator.message('title', this.state.article.title, 'required|alpha_num_space')}
+                            {this.validator.message('title', this.state.product.Nombre, 'required')}
                         </div>
+
                         <div className='form-group'>
-                            <label htmlFor='content'>Contenido</label>
-                            <textarea name='content' ref={this.contentref} onChange={this.changeState}></textarea>
-                            {this.validator.message('content', this.state.article.content, 'required')}
+                            <label htmlFor='price'>Precio</label>
+                            <input type='number' name='price' ref={this.priceref} onChange={this.changeState} />
+                            {this.validator.message('price', this.state.product.Precio, 'required|numeric')}
                         </div>
+
                         <div className='form-group'>
-                            <label htmlFor='file0'>Imagen</label>
-                            <input type='file' name='file0' onChange={this.fileChange} />
+                            <label htmlFor='description'>Descripción</label>
+                            <textarea name='description' ref={this.descriptionref} onChange={this.changeState}></textarea>
+                            {this.validator.message('description', this.state.product.Descripcion, 'required')}
                         </div>
-                        <input type='submit' value='guardar' className='btn btn-success' />
+
+                        <div className='form-group'>
+                            <label htmlFor='quantity'>Cantidad</label>
+                            <input type='number' name='quantity' ref={this.quantityref} onChange={this.changeState} />
+                            {this.validator.message('quantity', this.state.product.Cantidad, 'required|numeric')}
+                        </div>
+
+                        <div className='form-group'>
+                            <label htmlFor='category'>Categoría</label>
+                            <input type='text' name='category' ref={this.categoryref} onChange={this.changeState} />
+                            {this.validator.message('category', this.state.product.Categoria, 'required')}
+                        </div>
+
+                        <div className='form-group'>
+                            <label htmlFor='date'>Fecha</label>
+                            <input type='date' name='date' ref={this.dateref} onChange={this.changeState} />
+                            {this.validator.message('date', this.state.product.Fecha, 'required')}
+                        </div>
+
+                        <input type='submit' value='Guardar' className='btn btn-success' />
                     </form>
                 </section>
                 <Sidebar />
@@ -139,4 +117,5 @@ class CreateArticle extends Component {
         );
     }
 }
+
 export default CreateArticle;
