@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Slider from './Slider';
 import Sidebar from './Sidebar';
+import imagen_sin from '../assets/images/imagen_sin.jpg';
 
 class Ofertas extends Component {
     state = {
@@ -39,7 +40,8 @@ class Ofertas extends Component {
                             <div className="product-grid">
                                 {offers.map((product) => (
                                     <div className="product-item" key={product.ID}>
-                                        <img src={`path/to/images/${product.Imagen}`} alt={product.Nombre} />
+                                        {/*<img src={`path/to/images/${product.Imagen}`} alt={product.Nombre} />*/}
+                                        <img src={imagen_sin} alt="img" />
                                         <h3>{product.Nombre}</h3>
                                         <p>${product.Precio}</p>
                                         <button>Ver producto</button>
