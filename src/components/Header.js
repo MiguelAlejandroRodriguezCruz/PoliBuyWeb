@@ -7,9 +7,12 @@ class Header extends Component {
         return (
             <header style={styles.header}>
                 <div style={styles.topBar}>
-                    <div style={styles.logoContainer}>
+                    <NavLink to="/home" style={styles.logoContainer}>
                         <img src={logo} style={styles.logo} alt="Logotipo" />
                         <span style={styles.brand}><strong>PoliBuy</strong></span>
+                    </NavLink>
+                    <div>
+                        <h2>Bienvenido a PoliBuy</h2>
                     </div>
                     <div style={styles.rightMenu}>
                         <NavLink to="/favoritos" style={styles.iconLink}>
@@ -46,6 +49,7 @@ const styles = {
     logoContainer: {
         display: 'flex',
         alignItems: 'center',
+        textDecoration: 'none',
     },
     logo: {
         width: '40px',
@@ -73,23 +77,6 @@ const styles = {
         padding: '2px 8px',
         marginLeft: '5px',
         fontSize: '12px',
-    },
-    navigation: {
-        display: 'flex',
-        justifyContent: 'center',
-        padding: '20px 0',
-        backgroundColor: '#f8f8f8',
-        borderTop: '2px solid #f1c1d1',
-    },
-    navButton: {
-        backgroundColor: '#fff',
-        border: '2px solid #d66',
-        color: '#333',
-        padding: '10px 20px',
-        marginRight: '10px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px',
     },
 };
 
