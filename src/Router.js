@@ -7,7 +7,7 @@ import RegisterForm from './components/RegisterForm';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
-import Blog from './components/Blog';
+import Ofertas from './components/Ofertas';
 import ShopCart from './components/Shopcart';
 import Search from './components/Search';
 import Article from './components/Article';
@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
         <>
             {!hideHeaderRoutes.includes(location.pathname) && <Header />}
             {children}
-            <Footer />
+
         </>
     );
 };
@@ -44,15 +44,16 @@ const Router = () => {
                     <Route path="/RegisterForm" element={<RegisterForm />} />
                     <Route exact path='/home' element={<Home />} />
                     <Route exact path='/' element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/home"} />} />
-                    <Route exact path='/blog' element={<Blog />} />
+                    <Route exact path='/Ofertas' element={<Ofertas />} />
                     <Route exact path='/ShopCart' element={<ShopCart />} />
-                    <Route exact path='/blog/articulo/:id' element={<Article />} />
-                    <Route exact path='/blog/busqueda/:search' element={<Search />} />
-                    <Route exact path='/blog/crear' element={<CreateArticle />} />
-                    <Route exact path='/blog/editar/:id' element={<EditArticle />} />
+                    <Route exact path='/Ofertas/articulo/:id' element={<Article />} />
+                    <Route exact path='/Ofertas/busqueda/:search' element={<Search />} />
+                    <Route exact path='/Ofertas/crear' element={<CreateArticle />} />
+                    <Route exact path='/Ofertas/editar/:id' element={<EditArticle />} />
                     <Route path='*' element={<Error />} />
                 </Routes>
             </Layout>
+            {/*<Footer />*/}
         </BrowserRouter>
     );
 };
