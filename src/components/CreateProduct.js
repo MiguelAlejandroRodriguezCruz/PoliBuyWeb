@@ -17,6 +17,7 @@ class CreateArticle extends Component {
     state = {
         product: {},
         selectedFile: null,  // Para manejar el archivo
+        fileError: '',       // Para manejar errores de archivo
         status: null,
     };
 
@@ -42,16 +43,27 @@ class CreateArticle extends Component {
     }
 
     fileChange = (event) => {
-        this.setState({
-            selectedFile: event.target.files[0]
-        });
+        const file = event.target.files[0];
+
+        // Validar que el archivo sea jpg, jpeg o png
+        if (file && !['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+            this.setState({
+                selectedFile: null,
+                fileError: 'Solo se permiten archivos de imagen JPG, JPEG o PNG.'
+            });
+        } else {
+            this.setState({
+                selectedFile: file,
+                fileError: ''
+            });
+        }
     }
 
     saveProduct = (e) => {
         e.preventDefault();
         this.changeState();
 
-        if (this.validator.allValid()) {
+        if (this.validator.allValid() && !this.state.fileError) {
             // Crear un objeto FormData para enviar los datos
             const formData = new FormData();
             formData.append('Nombre', this.state.product.Nombre);
@@ -138,6 +150,7 @@ class CreateArticle extends Component {
                         <div className='form-group'>
                             <label htmlFor='file'>Imagen</label>
                             <input type="file" ref={this.imageref} onChange={this.fileChange} />
+                            {this.state.fileError && <span style={{ color: 'red' }}>{this.state.fileError}</span>}
                         </div>
 
                         <input type='submit' value='Guardar' className='btn btn-success' />
