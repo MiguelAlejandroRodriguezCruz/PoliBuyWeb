@@ -103,7 +103,7 @@ class CreateArticle extends Component {
 
     render() {
         if (this.state.status === 'success') {
-            return <Navigate to="/productos" />
+            return <Navigate to="/Home" />
         }
 
         return (

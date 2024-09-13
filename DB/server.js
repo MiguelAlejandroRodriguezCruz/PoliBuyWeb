@@ -110,7 +110,7 @@ app.get('/productsDashboard', async (req, res) => {
         const connection = await odbc.connect(connectionString);
 
         // Consulta para obtener los últimos 5 productos
-        const query = 'SELECT TOP 5 * FROM Productos ORDER BY ID DESC';
+        const query = 'SELECT TOP 6 * FROM Productos ORDER BY ID DESC';
         const result = await connection.query(query);
 
         res.json(result);
@@ -145,8 +145,7 @@ app.post('/createProduct', upload.single('file'), async (req, res) => {
 
         const escapedTempPath = tempPath.replace(/\\/g, '\\\\');
         const connection = await odbc.connect(connectionString);
-        const query = " INSERT INTO Productos (Nombre, Precio, Descripcion, Cantidad, Categoria, Fecha, Imagen) VALUES ('" + Nombre + "', '" + Precio + "', '" + Descripcion + "', '" + Cantidad + "', '" + Categoria + "', '" + Fecha + "','" + escapedTempPath + "')";
-
+        const query = " INSERT INTO Productos (Nombre, Precio, Descripcion, Cantidad, Categoria, Fecha, Imagen, Oferta, Ventas) VALUES ('" + Nombre + "', '" + Precio + "', '" + Descripcion + "', '" + Cantidad + "', '" + Categoria + "', '" + Fecha + "','" + escapedTempPath + "', 0, 0)";
         await connection.query(query);
         await connection.close();
 

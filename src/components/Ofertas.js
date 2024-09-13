@@ -24,6 +24,11 @@ class Ofertas extends Component {
         }
     };
 
+    sanitizeFileName = (fileName) => {
+        // Elimina espacios u otros caracteres no deseados
+        return fileName ? fileName.replace(/\s+/g, '') : '';
+    };
+
     render() {
         const { offers, loading } = this.state;
 
@@ -40,8 +45,14 @@ class Ofertas extends Component {
                             <div className="product-grid">
                                 {offers.map((product) => (
                                     <div className="product-item" key={product.ID}>
-                                        {/*<img src={`path/to/images/${product.Imagen}`} alt={product.Nombre} />*/}
-                                        <img src={imagen_sin} alt="img" />
+                                        {/* Sanitiza el nombre del archivo de imagen */}
+                                        <img
+                                            src={product.Imagen
+                                                ? `http://localhost:3001/${this.sanitizeFileName(product.Imagen)}`
+                                                : imagen_sin}
+                                            alt={product.Nombre}
+                                            onError={(e) => e.target.src = imagen_sin} // Si falla la carga, muestra imagen por defecto
+                                        />
                                         <h3>{product.Nombre}</h3>
                                         <p>${product.Precio}</p>
                                         <button>Ver producto</button>

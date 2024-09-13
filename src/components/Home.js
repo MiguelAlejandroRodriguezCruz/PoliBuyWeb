@@ -23,6 +23,11 @@ const Home = () => {
             });
     }, []);
 
+    const sanitizeFileName = (fileName) => {
+        // Elimina espacios y otros caracteres no deseados
+        return fileName ? fileName.replace(/\s+/g, '') : '';
+    };
+
     const handleNavigation = (path) => {
         navigate(path);
     };
@@ -51,11 +56,18 @@ const Home = () => {
                     ) : products.length === 0 ? (
                         <p>No hay productos disponibles actualmente.</p>
                     ) : (
-                        <div className="product-grid">
+                        <div className="product-grid" style={styles.productGrid}>
                             {products.map((product) => (
-                                <div className="product-item" key={product.ID}>
-                                    {/*<img src={`path/to/images/${product.Imagen}`} alt={product.Nombre} />*/}
-                                    <img src={imagen_sin} alt="img" />
+                                <div className="product-item" key={product.ID} style={styles.productCard}>
+                                    {/* Sanitiza el nombre del archivo de imagen */}
+                                    <img
+                                        src={product.Imagen
+                                            ? `http://localhost:3001/${sanitizeFileName(product.Imagen)}`
+                                            : imagen_sin}
+                                        alt={product.Nombre}
+                                        style={styles.productImage}
+                                        onError={(e) => e.target.src = imagen_sin} // Si falla la carga de imagen, muestra la imagen por defecto
+                                    />
                                     <h3>{product.Nombre}</h3>
                                     <p>${product.Precio}</p>
                                     <button>Ver producto</button>
@@ -116,3 +128,4 @@ const styles = {
 };
 
 export default Home;
+
