@@ -7,7 +7,7 @@ class Header extends Component {
         return (
             <header style={styles.header}>
                 <div style={styles.topBar}>
-                    <NavLink to="/home" style={styles.logoContainer}>
+                    <NavLink to="/Home" style={styles.logoContainer}>
                         <img src={logo} style={styles.logo} alt="Logotipo" />
                         <span style={styles.brand}><strong>PoliBuy</strong></span>
                     </NavLink>

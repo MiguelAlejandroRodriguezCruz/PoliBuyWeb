@@ -11,8 +11,9 @@ import Ofertas from './components/Ofertas';
 import ShopCart from './components/Shopcart';
 import Search from './components/Search';
 import Article from './components/Article';
-import CreateArticle from './components/CreateArticle';
+import CreateProduct from './components/CreateProduct';
 import EditArticle from './components/EditArticle';
+import Categories from './components/Categories';
 
 const Layout = ({ children }) => {
     const location = useLocation(); // Hook dentro de BrowserRouter
@@ -40,15 +41,16 @@ const Router = () => {
         <BrowserRouter>
             <Layout>
                 <Routes>
-                    <Route path="/LoginForm" element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/home"} />} />
+                    <Route path="/LoginForm" element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/Home"} />} />
                     <Route path="/RegisterForm" element={<RegisterForm />} />
-                    <Route exact path='/home' element={<Home />} />
-                    <Route exact path='/' element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/home"} />} />
+                    <Route exact path='/Home' element={<Home />} />
+                    <Route exact path='/' element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/Home"} />} />
                     <Route exact path='/Ofertas' element={<Ofertas />} />
+                    <Route exact path='/Categories' element={<Categories />} />
                     <Route exact path='/ShopCart' element={<ShopCart />} />
                     <Route exact path='/Ofertas/articulo/:id' element={<Article />} />
                     <Route exact path='/Ofertas/busqueda/:search' element={<Search />} />
-                    <Route exact path='/Ofertas/crear' element={<CreateArticle />} />
+                    <Route exact path='/CreateProduct' element={<CreateProduct />} />
                     <Route exact path='/Ofertas/editar/:id' element={<EditArticle />} />
                     <Route path='*' element={<Error />} />
                 </Routes>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Slider from './Slider';
 import Sidebar from './Sidebar';
-import Articles from './Articles';
+import Categories from './Categories';
 import { useParams } from "react-router-dom";
 
 function Search() {
@@ -20,7 +20,7 @@ function Search() {
             <div className="center">
                 <div id='content'>
                     {/**Listado de articulos del API */}
-                    <Articles
+                    <Categories
                         search={params.search}
                     />
                 </div>

@@ -1,16 +1,16 @@
 import React, { Component, createRef } from 'react';
-import { Link, Navigate  } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 class Sidebar extends Component {
 
-    
+
     searchRef = React.createRef();
     state = {
         search: "",
         redirect: false
     };
 
-    
+
 
     redirectToSearch = (e) => {
         e.preventDefault();
@@ -23,10 +23,10 @@ class Sidebar extends Component {
 
     render() {
 
-        if(this.state.redirect && this.state.search != ''){
-            return(
-                
-                <Navigate replace to={"/redirect/"+this.state.search} />
+        if (this.state.redirect && this.state.search != '') {
+            return (
+
+                <Navigate replace to={"/redirect/" + this.state.search} />
             );
         }
 
@@ -35,7 +35,7 @@ class Sidebar extends Component {
                 {this.props.blog === "true" &&
                     <div id="nav-blog" className="sidebar-item">
                         <h3>Puedes hacer esto</h3>
-                        <Link to='/blog/crear' className="btn btn-success">crear articulo</Link>
+                        <Link to='/CreateProduct' className="btn btn-success">crear articulo</Link>
                     </div>
                 }
 
@@ -43,7 +43,7 @@ class Sidebar extends Component {
                     <h3>Buscador</h3>
                     <p>Encuentra el artículo que buscas</p>
                     <form onSubmit={this.redirectToSearch}>
-                        <input type="text" name="search" ref={this.searchRef}/>
+                        <input type="text" name="search" ref={this.searchRef} />
                         <input type="submit" name="submit" value="Buscar" className="btn" />
                     </form>
                 </div>

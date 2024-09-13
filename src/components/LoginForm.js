@@ -26,7 +26,7 @@ const LoginForm = ({ handleLogin }) => {
 
             const data = await response.json();
             handleLogin(email);
-            navigate("/home");
+            navigate("/Home");
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setError('Credenciales incorrectas. Inténtalo de nuevo.');
