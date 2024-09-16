@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/images/Logo.jpeg';
 
@@ -7,6 +7,12 @@ const LoginForm = ({ handleLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    // Limpiar localStorage cuando se accede a la página de login
+    useEffect(() => {
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
+    }, []);
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -25,7 +31,14 @@ const LoginForm = ({ handleLogin }) => {
             }
 
             const data = await response.json();
-            handleLogin(email);
+            const userRole = data.tipo; // Asumiendo que el backend devuelve el campo 'tipo'
+            const userId = data.userId;  // Asumiendo que el backend devuelve el campo 'userId'
+
+            // Guardar en localStorage y llamar handleLogin para actualizar el estado global
+            localStorage.setItem('userRole', userRole);
+            localStorage.setItem('userId', userId);
+
+            handleLogin(userRole, userId);  // Guardamos el rol y ID del usuario
             navigate("/Home");
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
@@ -36,7 +49,7 @@ const LoginForm = ({ handleLogin }) => {
     return (
         <div className="login-form-container">
             <div className="login-header">
-                <img src="../src/assets/images/Logo.jpeg" alt="Logotipo" className="login-logo" />
+                <img src={logo} alt="Logotipo" className="login-logo" />
                 <h2 className="login-title">Polibuy</h2>
             </div>
             <form onSubmit={onSubmit} className="login-form">
@@ -77,4 +90,3 @@ const LoginForm = ({ handleLogin }) => {
 };
 
 export default LoginForm;
-

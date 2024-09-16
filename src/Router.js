@@ -10,7 +10,7 @@ import Home from './components/Home';
 import Ofertas from './components/Ofertas';
 import ShopCart from './components/Shopcart';
 import Search from './components/Search';
-import Article from './components/Article';
+import Product from './components/Product';
 import CreateProduct from './components/CreateProduct';
 import EditArticle from './components/EditArticle';
 import Categories from './components/Categories';
@@ -32,23 +32,35 @@ const Layout = ({ children }) => {
 
 const Router = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userRole, setUserRole] = useState(null);
+    const [userId, setUserId] = useState(null);
 
-    const handleLogin = (email) => {
+    const handleLogin = (role, id) => {
         setIsLoggedIn(true);
+        setUserRole(role);
+        setUserId(id);
+
     };
 
     return (
         <BrowserRouter>
             <Layout>
                 <Routes>
-                    <Route path="/LoginForm" element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/Home"} />} />
+                    <Route
+                        path="/LoginForm"
+                        element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to="/Home" />}
+                    />
+                    <Route
+                        exact
+                        path="/"
+                        element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to="/Home" />}
+                    />
                     <Route path="/RegisterForm" element={<RegisterForm />} />
-                    <Route exact path='/Home' element={<Home />} />
-                    <Route exact path='/' element={!isLoggedIn ? <LoginForm handleLogin={handleLogin} /> : <Navigate to={"/Home"} />} />
-                    <Route exact path='/Ofertas' element={<Ofertas />} />
-                    <Route exact path='/Categories' element={<Categories />} />
+                    <Route exact path='/Home' element={<Home userId={userId} userRole={userRole} />} />
+                    <Route exact path='/Ofertas' element={<Ofertas userId={userId} userRole={userRole} />} />
+                    <Route exact path='/Categories' element={<Categories userId={userId} userRole={userRole} />} />
                     <Route exact path='/ShopCart' element={<ShopCart />} />
-                    <Route exact path='/Ofertas/articulo/:id' element={<Article />} />
+                    <Route exact path='/Product/:id' element={<Product />} />
                     <Route exact path='/Ofertas/busqueda/:search' element={<Search />} />
                     <Route exact path='/CreateProduct' element={<CreateProduct />} />
                     <Route exact path='/Ofertas/editar/:id' element={<EditArticle />} />

@@ -70,12 +70,13 @@ app.post('/login', async (req, res) => {
 
     try {
         const connection = await odbc.connect(connectionString);
-        const query = "SELECT Tipo, Nombre FROM Usuarios WHERE Correo = '" + email + "' AND Contraseña = '" + password + "'";
+        const query = "SELECT Tipo, Nombre, ID FROM Usuarios WHERE Correo = '" + email + "' AND Contraseña = '" + password + "'";
         const result = await connection.query(query);
 
         if (result.length > 0) {
             const userRole = result[0].Tipo;
-            res.json({ tipo: userRole });
+            const userId = result[0].ID;
+            res.json({ tipo: userRole, id: userId });
         } else {
             res.status(401).json({ error: 'Credenciales incorrectas' });
         }
@@ -84,6 +85,25 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.error('Error al autenticar usuario:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// Endpoint para devolver un producto
+app.get('/product/:productId', async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const connection = await odbc.connect(connectionString);
+
+        // Consulta para obtener los últimos 5 productos
+        const query = `SELECT * FROM Productos WHERE ID = ${productId}`;
+
+        const result = await connection.query(query);
+
+        res.json(result);
+        await connection.close();
+    } catch (err) {
+        console.error('Error en la consulta:', err.message);
+        res.status(500).send(err.message);
     }
 });
 

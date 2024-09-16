@@ -5,12 +5,24 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import imagen_sin from '../assets/images/imagen_sin.jpg';
 
-const Home = () => {
+const Home = ({ userRole, userId }) => {
     const navigate = useNavigate();
+
+    // Obtén los valores de localStorage si existen, de lo contrario usa los props
+    const [tipo, setUserTipo] = useState(localStorage.getItem('userRole') || userRole);
+    const [id, setUserId] = useState(localStorage.getItem('userId') || userId);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Almacena userRole y userId en localStorage cada vez que cambien
+        if (userRole) {
+            localStorage.setItem('userRole', userRole);
+        }
+        if (userId) {
+            localStorage.setItem('userId', userId);
+        }
+
         // Llamada al endpoint para obtener los últimos 5 productos
         axios.get('http://localhost:3001/productsDashboard')
             .then(res => {
@@ -21,7 +33,12 @@ const Home = () => {
                 console.error('Error al obtener productos:', err);
                 setLoading(false);
             });
-    }, []);
+    }, [userRole, userId]);
+
+    const handleViewProduct = (id) => {
+        // Navega a la página del producto con la ID correspondiente
+        navigate(`/Product/${id}`);
+    };
 
     const sanitizeFileName = (fileName) => {
         // Elimina espacios y otros caracteres no deseados
@@ -70,13 +87,13 @@ const Home = () => {
                                     />
                                     <h3>{product.Nombre}</h3>
                                     <p>${product.Precio}</p>
-                                    <button>Ver producto</button>
+                                    <button onClick={() => handleViewProduct(product.ID)}>Ver producto</button>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
-                <Sidebar blog="true" />
+                <Sidebar userType={tipo} />
             </div>
         </div>
     );
@@ -128,4 +145,3 @@ const styles = {
 };
 
 export default Home;
-

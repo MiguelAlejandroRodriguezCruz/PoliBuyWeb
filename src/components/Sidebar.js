@@ -31,8 +31,10 @@ class Sidebar extends Component {
         }
 
         return (
+
             <aside id="sidebar">
-                {this.props.blog === "true" &&
+
+                {this.props.userType === "Vendedor" &&
                     <div id="nav-blog" className="sidebar-item">
                         <h3>Puedes hacer esto</h3>
                         <Link to='/CreateProduct' className="btn btn-success">crear articulo</Link>
