@@ -45,15 +45,14 @@ const Product = ({ userId }) => {
     const handleAddToCart = async () => {
         try {
             if (inCart) {
-                // Si ya está en el carrito, eliminarlo
-                const response = await axios.post('http://localhost:3001/deleteShopCart', {
-                    usuario: idUser,   // ID del usuario
-                    producto: id       // ID del producto
+                // Si ya está en el carrito, eliminarlo con DELETE
+                await axios.delete('http://localhost:3001/deleteShopCart', {
+                    data: { usuario: idUser, producto: id }
                 });
                 alert('Producto eliminado del carrito');
             } else {
-                // Si no está en el carrito, agregarlo
-                const response = await axios.post('http://localhost:3001/shopCart', {
+                // Si no está en el carrito, agregarlo con POST
+                await axios.post('http://localhost:3001/shopCart', {
                     usuario: idUser,   // ID del usuario
                     producto: id       // ID del producto
                 });
@@ -70,14 +69,14 @@ const Product = ({ userId }) => {
         try {
             if (liked) {
                 // Si ya está en "me gusta", eliminarlo
-                const response = await axios.post('http://localhost:3001/deleteLike', {
+                await axios.post('http://localhost:3001/deleteLike', {
                     usuario: idUser,   // ID del usuario
                     producto: id       // ID del producto
                 });
                 alert('Producto eliminado de "me gusta"');
             } else {
                 // Si no está en "me gusta", agregarlo
-                const response = await axios.post('http://localhost:3001/like', {
+                await axios.post('http://localhost:3001/like', {
                     usuario: idUser,   // ID del usuario
                     producto: id       // ID del producto
                 });

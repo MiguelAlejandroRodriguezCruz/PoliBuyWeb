@@ -14,6 +14,7 @@ import Product from './components/Product';
 import CreateProduct from './components/CreateProduct';
 import EditArticle from './components/EditArticle';
 import Categories from './components/Categories';
+import Like from './components/Like';
 
 const Layout = ({ children }) => {
     const location = useLocation(); // Hook dentro de BrowserRouter
@@ -60,6 +61,7 @@ const Router = () => {
                     <Route exact path='/Ofertas' element={<Ofertas userId={userId} userRole={userRole} />} />
                     <Route exact path='/Categories' element={<Categories userId={userId} userRole={userRole} />} />
                     <Route exact path='/ShopCart' element={<ShopCart />} />
+                    <Route exact path='/Like' element={<Like />} />
                     <Route exact path='/Product/:id' element={<Product userId={userId} />} />
                     <Route exact path='/Ofertas/busqueda/:search' element={<Search />} />
                     <Route exact path='/CreateProduct' element={<CreateProduct />} />

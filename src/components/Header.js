@@ -15,7 +15,7 @@ class Header extends Component {
                         <h2>Bienvenido a PoliBuy</h2>
                     </div>
                     <div style={styles.rightMenu}>
-                        <NavLink to="/favoritos" style={styles.iconLink}>
+                        <NavLink to="/Like" style={styles.iconLink}>
                             <span role="img" aria-label="favoritos">❤️</span>
                             <span style={styles.counter}>12</span>
                         </NavLink>

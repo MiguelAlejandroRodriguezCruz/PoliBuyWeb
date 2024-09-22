@@ -231,12 +231,13 @@ app.post('/like', async (req, res) => {
 });
 
 // Endpoint para quirar del carrito
-app.post('/deleteShopCart', async (req, res) => {
+app.delete('/deleteShopCart', async (req, res) => {
     try {
         const { usuario, producto } = req.body;
 
         const connection = await odbc.connect(connectionString);
         const query = " DELETE FROM Carrito WHERE Usuario_ID = " + usuario + " AND Producto_ID  = " + producto;
+
         await connection.query(query);
         await connection.close();
 
@@ -248,7 +249,7 @@ app.post('/deleteShopCart', async (req, res) => {
 });
 
 // Endpoint para quirar de me gusta
-app.post('/deleteLike', async (req, res) => {
+app.delete('/deleteLike', async (req, res) => {
     try {
         const { usuario, producto } = req.body;
 
@@ -303,6 +304,42 @@ app.post('/checkLike', async (req, res) => {
     } catch (err) {
         console.error('Error al verificar "me gusta":', err);
         res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para devolver el carrito
+app.get('/viewCart/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const connection = await odbc.connect(connectionString);
+
+        const query = `SELECT p.ID, p.Nombre, p.Imagen, p.Cantidad, p.Precio FROM Productos as p INNER JOIN Carrito as c on p.ID = c.Producto_ID WHERE c.Usuario_ID = ${userId}`;
+
+        const result = await connection.query(query);
+
+        res.json(result);
+        await connection.close();
+    } catch (err) {
+        console.error('Error en la consulta:', err.message);
+        res.status(500).send(err.message);
+    }
+});
+
+// Endpoint para devolver los me gusta
+app.get('/viewLike/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const connection = await odbc.connect(connectionString);
+
+        const query = `SELECT p.ID, p.Nombre, p.Imagen, p.Cantidad, p.Precio FROM Productos as p INNER JOIN MeGustan as c on p.ID = c.Producto_ID WHERE c.Usuario_ID = ${userId}`;
+
+        const result = await connection.query(query);
+
+        res.json(result);
+        await connection.close();
+    } catch (err) {
+        console.error('Error en la consulta:', err.message);
+        res.status(500).send(err.message);
     }
 });
 

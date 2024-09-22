@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Slider from './Slider';
 import axios from 'axios';
 
-class Shopcart extends Component {
+class Like extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,7 +14,7 @@ class Shopcart extends Component {
     const userId = localStorage.getItem('userId'); // Supongo que el userId está almacenado en localStorage
 
     // Llamada a la API para obtener los productos en el carrito del usuario
-    axios.get(`http://localhost:3001/viewCart/${userId}`)
+    axios.get(`http://localhost:3001/viewLike/${userId}`)
       .then((response) => {
         // Actualiza el estado con los productos obtenidos
         this.setState({ productos: response.data });
@@ -35,7 +35,7 @@ class Shopcart extends Component {
   handleRemoveFromCart = (productoId) => {
     const userId = localStorage.getItem('userId');
 
-    axios.delete('http://localhost:3001/deleteShopCart', {
+    axios.delete('http://localhost:3001/deleteLike', {
       data: { usuario: userId, producto: productoId }
     })
       .then((response) => {
@@ -58,7 +58,7 @@ class Shopcart extends Component {
       <div id="Shopcart">
         <Slider />
         <div className="shopcart-container">
-          <h2 className="shopcart-title">Carrito de compras</h2>
+          <h2 className="shopcart-title">Articulos que me gustan</h2>
           <div className="shopcart-content">
             {/* Sección de productos en el carrito */}
             <div className="shopcart-items">
@@ -80,22 +80,7 @@ class Shopcart extends Component {
                     </div>
                   </div>
                   <div className="item-actions">
-                    {/* Desplegable con la cantidad basada en el valor de la base de datos, limitado a 10 */}
-                    <select
-                      className="item-quantity"
-                      value={producto.selectedCantidad || 1}  // Valor inicial si no se ha seleccionado cantidad
-                      onChange={(e) =>
-                        this.handleQuantityChange(index, parseInt(e.target.value))
-                      }
-                    >
-                      {producto.Cantidad > 0 &&
-                        [...Array(Math.min(producto.Cantidad, 10)).keys()].map((num) => (
-                          <option key={num + 1} value={num + 1}>
-                            {num + 1}
-                          </option>
-                        ))
-                      }
-                    </select>
+
                     <p className="item-price">${producto.Precio}</p>
                     <button
                       className="remove-item"
@@ -108,32 +93,7 @@ class Shopcart extends Component {
               ))}
             </div>
 
-            {/* Sección de resumen del pedido */}
-            <div className="shopcart-summary">
-              <h3>Resumen</h3>
-              <p>
-                Artículos en carrito: $
-                {productos.reduce(
-                  (acc, producto) => acc + producto.Precio * (producto.selectedCantidad || 1),
-                  0
-                ).toFixed(2)}
-              </p>
-              <p>Descuentos aplicados: -$25.00</p>
-              <hr />
-              <h2>
-                Total: $
-                {(
-                  productos.reduce(
-                    (acc, producto) => acc + producto.Precio * (producto.selectedCantidad || 1),
-                    0
-                  ) - 25
-                ).toFixed(2)}
-              </h2>
-              <button className="checkout-button">PROCEDER AL PAGO</button>
-              <button className="discount-code">
-                CÓDIGO DE DESCUENTO / TARJETA DE REGALO
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
@@ -141,4 +101,4 @@ class Shopcart extends Component {
   }
 }
 
-export default Shopcart;
+export default Like;
