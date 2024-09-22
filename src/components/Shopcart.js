@@ -1,12 +1,65 @@
 import React, { Component } from 'react';
 import Slider from './Slider';
 import axios from 'axios';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+// Cargar el cliente de Stripe con tu clave pública
+const stripePromise = loadStripe('tu_clave_publica_de_stripe');
+
+// Componente para manejar el formulario de tarjeta de crédito
+function CheckoutForm({ productos }) {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+
+    // Crear el intent de pago desde el backend
+    const { data: { clientSecret } } = await axios.post('http://localhost:3001/create-payment-intent', {
+      productos,
+      userId,
+    });
+
+    const cardElement = elements.getElement(CardElement);
+
+    // Confirmar el pago con la tarjeta ingresada
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      },
+    });
+
+    if (error) {
+      console.error('Error during payment:', error.message);
+    } else {
+      console.log('Pago exitoso:', paymentIntent);
+      alert('Pago realizado con éxito!');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <CardElement />
+      <button type="submit" disabled={!stripe}>
+        Pagar
+      </button>
+    </form>
+  );
+}
 
 class Shopcart extends Component {
   constructor(props) {
     super(props);
     this.state = {
       productos: [], // Estado para almacenar los productos
+      showPaymentForm: false, // Estado para mostrar/ocultar el formulario de pago
     };
   }
 
@@ -51,8 +104,13 @@ class Shopcart extends Component {
       });
   };
 
+  handleCheckout = () => {
+    // Mostrar el formulario de pago
+    this.setState({ showPaymentForm: true });
+  };
+
   render() {
-    const { productos } = this.state;
+    const { productos, showPaymentForm } = this.state;
 
     return (
       <div id="Shopcart">
@@ -118,7 +176,7 @@ class Shopcart extends Component {
                   0
                 ).toFixed(2)}
               </p>
-              <p>Descuentos aplicados: -$25.00</p>
+
               <hr />
               <h2>
                 Total: $
@@ -126,10 +184,18 @@ class Shopcart extends Component {
                   productos.reduce(
                     (acc, producto) => acc + producto.Precio * (producto.selectedCantidad || 1),
                     0
-                  ) - 25
+                  )
                 ).toFixed(2)}
               </h2>
-              <button className="checkout-button">PROCEDER AL PAGO</button>
+              {!showPaymentForm ? (
+                <button className="checkout-button" onClick={this.handleCheckout}>
+                  PROCEDER AL PAGO
+                </button>
+              ) : (
+                <Elements stripe={stripePromise}>
+                  <CheckoutForm productos={productos} />
+                </Elements>
+              )}
               <button className="discount-code">
                 CÓDIGO DE DESCUENTO / TARJETA DE REGALO
               </button>

@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import imagen_sin from '../assets/images/imagen_sin.jpg';
 
-const Product = ({ userId }) => {
-    // Obtén los valores de localStorage si existen, de lo contrario usa los props
+const Product = ({ userId, userRole }) => {
     const [idUser, setUserId] = useState(localStorage.getItem('userId') || userId);
+    const [tipo, setUserTipo] = useState(localStorage.getItem('userRole') || userRole);
     const { id } = useParams(); // 'id' es el ID del producto
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [comment, setComment] = useState('');
     const [rating, setRating] = useState(0);
-    const [liked, setLiked] = useState(false); // Estado para el botón de "me gusta"
-    const [inCart, setInCart] = useState(false); // Estado para saber si el producto está en el carrito
+    const [liked, setLiked] = useState(false);
+    const [inCart, setInCart] = useState(false);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
-        // Llamada al endpoint para obtener los detalles del producto
         axios.get(`http://localhost:3001/product/${id}`)
             .then(res => {
-                setProduct(res.data[0]); // Asignamos el primer (y único) producto de la respuesta
+                setProduct(res.data[0]);
                 setLoading(false);
             })
             .catch(err => {
@@ -26,39 +27,57 @@ const Product = ({ userId }) => {
                 setLoading(false);
             });
 
-        // Verificar si el producto ya está en el carrito
         axios.post('http://localhost:3001/checkCart', { usuario: idUser, producto: id })
             .then(res => {
-                setInCart(res.data.inCart); // Si ya está en el carrito, cambia el estado
+                setInCart(res.data.inCart);
             })
             .catch(err => console.error('Error al verificar carrito:', err));
 
-        // Verificar si el producto ya tiene "me gusta"
         axios.post('http://localhost:3001/checkLike', { usuario: idUser, producto: id })
             .then(res => {
-                setLiked(res.data.liked); // Si ya tiene "me gusta", cambia el estado
+                setLiked(res.data.liked);
             })
             .catch(err => console.error('Error al verificar me gusta:', err));
 
     }, [id, idUser]);
 
+    const handleEditProduct = () => {
+        navigate(`/editProduct/${id}`);
+    };
+
+    const handleDeleteProduct = async () => {
+        try {
+            const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este producto?');
+            if (!confirmDelete) return;
+
+            await axios.delete('http://localhost:3001/deleteProduct', {
+                data: { producto: id }
+            });
+            alert('Producto eliminado correctamente');
+
+            navigate('/Home');
+        } catch (error) {
+            console.error('Error al eliminar producto:', error);
+            alert('Hubo un error al eliminar el producto');
+        }
+    };
+
+
     const handleAddToCart = async () => {
         try {
             if (inCart) {
-                // Si ya está en el carrito, eliminarlo con DELETE
                 await axios.delete('http://localhost:3001/deleteShopCart', {
                     data: { usuario: idUser, producto: id }
                 });
                 alert('Producto eliminado del carrito');
             } else {
-                // Si no está en el carrito, agregarlo con POST
                 await axios.post('http://localhost:3001/shopCart', {
-                    usuario: idUser,   // ID del usuario
-                    producto: id       // ID del producto
+                    usuario: idUser,
+                    producto: id
                 });
                 alert('Producto agregado al carrito');
             }
-            setInCart(!inCart); // Cambiar el estado del carrito
+            setInCart(!inCart);
         } catch (error) {
             console.error('Error al manejar el carrito:', error);
             alert('Hubo un error con el carrito');
@@ -68,21 +87,19 @@ const Product = ({ userId }) => {
     const handleLike = async () => {
         try {
             if (liked) {
-                // Si ya está en "me gusta", eliminarlo
                 await axios.post('http://localhost:3001/deleteLike', {
-                    usuario: idUser,   // ID del usuario
-                    producto: id       // ID del producto
+                    usuario: idUser,
+                    producto: id
                 });
                 alert('Producto eliminado de "me gusta"');
             } else {
-                // Si no está en "me gusta", agregarlo
                 await axios.post('http://localhost:3001/like', {
-                    usuario: idUser,   // ID del usuario
-                    producto: id       // ID del producto
+                    usuario: idUser,
+                    producto: id
                 });
                 alert('Producto marcado como "me gusta"');
             }
-            setLiked(!liked); // Cambiar el estado de "me gusta"
+            setLiked(!liked);
         } catch (error) {
             console.error('Error al manejar "me gusta":', error);
             alert('Hubo un error con "me gusta"');
@@ -108,7 +125,7 @@ const Product = ({ userId }) => {
             <p><strong>Precio:</strong> ${product.Precio}</p>
             <p><strong>Descripción:</strong> {product.Descripcion}</p>
             <p><strong>Cantidad disponible:</strong> {product.Cantidad}</p>
-            <p><strong>Oferta:</strong> {product.Oferta ? 'Sí' : 'No'}</p>
+            <p><strong>Oferta:</strong> {product.Oferta}</p>
             <p><strong>Categoría:</strong> {product.Categoria}</p>
             <p><strong>Fecha de lanzamiento:</strong> {new Date(product.Fecha).toLocaleDateString()}</p>
             <p><strong>Ventas:</strong> {product.Ventas}</p>
@@ -121,8 +138,21 @@ const Product = ({ userId }) => {
                     {inCart ? 'Quitar del carrito' : 'Agregar al carrito'}
                 </button>
                 <button className="like-button" onClick={handleLike}>
-                    {liked ? '❤️' : '🤍'} {/* Cambia el icono del corazón según si le gusta o no */}
+                    {liked ? '❤️' : '🤍'}
                 </button>
+
+                {/* Mostrar los botones si el tipo es 'Vendedor' */}
+                {tipo === 'Vendedor' && (
+                    <div className="seller-actions">
+                        <button className="edit-button" onClick={handleEditProduct}>
+                            Editar producto
+                        </button>
+                        <button className="delete-button" onClick={handleDeleteProduct}>
+                            Eliminar producto
+                        </button>
+                    </div>
+                )}
+
             </div>
 
             <div className="comment-section">

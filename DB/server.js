@@ -1,5 +1,8 @@
 const express = require('express');
 const odbc = require('odbc');
+const Stripe = require('stripe');
+const cors = require('cors');
+const stripe = Stripe('tu_clave_secreta');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs'); // Asegúrate de importar el módulo fs
@@ -18,6 +21,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// Middleware
+app.use(cors());
 // Middleware para analizar el cuerpo de las solicitudes entrantes como JSON
 app.use(express.json());
 
@@ -47,6 +52,30 @@ app.use((err, req, res, next) => {
     res.status(500).send('Error interno del servidor');
 });
 
+// Pagos 
+// Endpoint para crear el Payment Intent
+app.post('/create-payment-intent', async (req, res) => {
+    const { productos, userId } = req.body;
+
+    // Calcular el total en centavos de MXN
+    const totalAmount = productos.reduce((acc, producto) => {
+        return acc + producto.Precio * (producto.selectedCantidad || 1);
+    }, 0) * 100; // Stripe maneja los montos en centavos
+
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: totalAmount,
+            currency: 'mxn',
+            payment_method_types: ['card'],
+        });
+
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+});
 // Endpoint para registrar un usuario
 app.post('/registerUser', async (req, res) => {
     try {
@@ -179,13 +208,13 @@ app.post('/createProduct', upload.single('file'), async (req, res) => {
 // Endpoint para editar un producto
 app.put('/editProduct/:id', async (req, res) => {
     const { id } = req.params;
-    const { Nombre, Precio, Descripcion, Cantidad, Oferta, Categoria, Ventas, Color, Tamaño } = req.body;
+    const { Nombre, Precio, Descripcion, Cantidad, Oferta, Categoria, Color, Tamaño } = req.body;
 
     try {
         const connection = await odbc.connect(connectionString);
 
         // Consulta para actualizar el producto con el ID especificado
-        const query = `UPDATE Productos SET Nombre = '${Nombre}', Precio = '${Precio}', Descripcion = '${Descripcion}', Cantidad = '${Cantidad}', Oferta = '${Oferta}', Categoria = '${Categoria}', Ventas = '${Ventas}', Color = '${Color}', Tamaño = '${Tamaño}' WHERE id_producto = ${id}`;
+        const query = `UPDATE Productos SET Nombre = '${Nombre}', Precio = ${Precio}, Descripcion = '${Descripcion}', Cantidad = '${Cantidad}', Oferta = '${Oferta}', Categoria = '${Categoria}', Color = '${Color}', Tamaño = '${Tamaño}' WHERE ID = ${id}`;
 
         await connection.query(query);
         res.json({ message: 'Producto actualizado correctamente' });
@@ -193,6 +222,42 @@ app.put('/editProduct/:id', async (req, res) => {
     } catch (err) {
         console.error('Error al actualizar el producto:', err.message);
         res.status(500).send(err.message);
+    }
+});
+
+// Endpoint para eliminar un producto
+app.delete('/deleteProduct', async (req, res) => {
+    try {
+        const { producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+
+        // Primero obtenemos la imagen asociada al producto
+        const selectQuery = "SELECT Imagen FROM Productos WHERE ID = " + producto;
+        const result = await connection.query(selectQuery);
+        const imagePath = result[0]?.Imagen; // La ruta de la imagen está en el campo 'Imagen'
+
+        // Eliminamos el producto de la base de datos
+        const deleteQuery = "DELETE FROM Productos WHERE ID = " + producto;
+        await connection.query(deleteQuery);
+        await connection.close();
+
+        // Si existe una imagen, la eliminamos del sistema de archivos
+        if (imagePath) {
+            const fullImagePath = path.join(__dirname, 'http://localhost:3001', imagePath.trim());
+            fs.unlink(fullImagePath, (err) => {
+                if (err) {
+                    console.error('Error al eliminar la imagen:', err);
+                } else {
+                    console.log('Imagen eliminada correctamente');
+                }
+            });
+        }
+
+        res.status(201).json({ message: 'Producto e imagen eliminados correctamente' });
+    } catch (err) {
+        console.error('Error al eliminar producto:', err);
+        res.status(500).send('Error interno del servidor');
     }
 });
 

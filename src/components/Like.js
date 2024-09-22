@@ -62,7 +62,6 @@ class Like extends Component {
           <div className="shopcart-content">
             {/* Sección de productos en el carrito */}
             <div className="shopcart-items">
-              <h3 className="shopcart-subheader">Tu pedido</h3>
 
               {/* Mapea los productos del estado para generar cada bloque */}
               {productos.map((producto, index) => (
