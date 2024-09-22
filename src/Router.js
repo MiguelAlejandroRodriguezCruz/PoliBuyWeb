@@ -39,7 +39,7 @@ const Router = () => {
         setIsLoggedIn(true);
         setUserRole(role);
         setUserId(id);
-
+        localStorage.setItem('userId', id);  // Guarda el userId en el localStorage
     };
 
     return (
@@ -60,7 +60,7 @@ const Router = () => {
                     <Route exact path='/Ofertas' element={<Ofertas userId={userId} userRole={userRole} />} />
                     <Route exact path='/Categories' element={<Categories userId={userId} userRole={userRole} />} />
                     <Route exact path='/ShopCart' element={<ShopCart />} />
-                    <Route exact path='/Product/:id' element={<Product />} />
+                    <Route exact path='/Product/:id' element={<Product userId={userId} />} />
                     <Route exact path='/Ofertas/busqueda/:search' element={<Search />} />
                     <Route exact path='/CreateProduct' element={<CreateProduct />} />
                     <Route exact path='/Ofertas/editar/:id' element={<EditArticle />} />

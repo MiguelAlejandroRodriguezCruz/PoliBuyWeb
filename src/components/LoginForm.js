@@ -32,7 +32,7 @@ const LoginForm = ({ handleLogin }) => {
 
             const data = await response.json();
             const userRole = data.tipo; // Asumiendo que el backend devuelve el campo 'tipo'
-            const userId = data.userId;  // Asumiendo que el backend devuelve el campo 'userId'
+            const userId = data.id;  // Asumiendo que el backend devuelve el campo 'userId'
 
             // Guardar en localStorage y llamar handleLogin para actualizar el estado global
             localStorage.setItem('userRole', userRole);

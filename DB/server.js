@@ -196,6 +196,116 @@ app.put('/editProduct/:id', async (req, res) => {
     }
 });
 
+// Endpoint para agregar al carrito
+app.post('/shopCart', async (req, res) => {
+    try {
+        const { usuario, producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+        const query = " INSERT INTO Carrito (Usuario_ID, Producto_ID) VALUES (" + usuario + ", " + producto + ")";
+        await connection.query(query);
+        await connection.close();
+
+        res.status(201).json({ message: 'Producto agregado correctamente' });
+    } catch (err) {
+        console.error('Error al agregar producto:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para dar me gusta
+app.post('/like', async (req, res) => {
+    try {
+        const { usuario, producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+        const query = " INSERT INTO MeGustan (Usuario_ID, Producto_ID) VALUES (" + usuario + ", " + producto + ")";
+        await connection.query(query);
+        await connection.close();
+
+        res.status(201).json({ message: 'Me gusta agregado correctamente' });
+    } catch (err) {
+        console.error('Error al dar me gusta:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para quirar del carrito
+app.post('/deleteShopCart', async (req, res) => {
+    try {
+        const { usuario, producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+        const query = " DELETE FROM Carrito WHERE Usuario_ID = " + usuario + " AND Producto_ID  = " + producto;
+        await connection.query(query);
+        await connection.close();
+
+        res.status(201).json({ message: 'Producto eliminado del carrito correctamente' });
+    } catch (err) {
+        console.error('Error al eliminar producto:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para quirar de me gusta
+app.post('/deleteLike', async (req, res) => {
+    try {
+        const { usuario, producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+        const query = " DELETE FROM MeGustan WHERE Usuario_ID = " + usuario + " AND Producto_ID  = " + producto;
+        await connection.query(query);
+        await connection.close();
+
+        res.status(201).json({ message: 'Producto eliminado de me gusta correctamente' });
+    } catch (err) {
+        console.error('Error al eliminar producto:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para verificar si el producto está en el carrito
+app.post('/checkCart', async (req, res) => {
+    try {
+        const { usuario, producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+        const query = "SELECT * FROM Carrito WHERE Usuario_ID = " + usuario + " AND Producto_ID = " + producto;
+        const result = await connection.query(query);
+        await connection.close();
+
+        if (result.length > 0) {
+            res.json({ inCart: true }); // Si el producto está en el carrito
+        } else {
+            res.json({ inCart: false }); // Si el producto no está en el carrito
+        }
+    } catch (err) {
+        console.error('Error al verificar carrito:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+// Endpoint para verificar si el producto tiene "me gusta"
+app.post('/checkLike', async (req, res) => {
+    try {
+        const { usuario, producto } = req.body;
+
+        const connection = await odbc.connect(connectionString);
+        const query = "SELECT * FROM MeGustan WHERE Usuario_ID = " + usuario + " AND Producto_ID = " + producto;
+        const result = await connection.query(query);
+        await connection.close();
+
+        if (result.length > 0) {
+            res.json({ liked: true }); // Si ya le ha dado "me gusta" al producto
+        } else {
+            res.json({ liked: false }); // Si no le ha dado "me gusta"
+        }
+    } catch (err) {
+        console.error('Error al verificar "me gusta":', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
 /*
 app.get('/data', async (req, res) => {
     try {
