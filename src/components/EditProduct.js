@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const EditProduct = () => {
-    const { id } = useParams(); // Obtenemos el id del producto desde la URL
-    const navigate = useNavigate(); // Para redirigir después de la edición
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState({
         Nombre: '',
         Precio: '',
@@ -19,10 +19,9 @@ const EditProduct = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Obtener los detalles del producto cuando el componente se monte
         axios.get(`http://localhost:3001/product/${id}`)
             .then(res => {
-                setProduct(res.data[0]); // Prellenar los campos con la información del producto
+                setProduct(res.data[0]);
                 setLoading(false);
             })
             .catch(err => {
@@ -42,10 +41,9 @@ const EditProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Enviar los datos al backend para actualizar el producto
             await axios.put(`http://localhost:3001/editProduct/${id}`, product);
             alert('Producto actualizado correctamente');
-            navigate(`/product/${id}`); // Redirigir de nuevo a la página del producto
+            navigate(`/product/${id}`);
         } catch (error) {
             console.error('Error al actualizar el producto:', error);
             alert('Hubo un error al actualizar el producto');
@@ -111,31 +109,43 @@ const EditProduct = () => {
                 </label>
                 <label>
                     Categoría:
-                    <input
-                        type="text"
+                    <select
                         name="Categoria"
                         value={product.Categoria}
                         onChange={handleInputChange}
                         required
-                    />
+                    >
+                        <option value="Ropa">Ropa</option>
+                        <option value="Electronica">Electrónica</option>
+                        <option value="Juguetes">Juguetes</option>
+                        <option value="Muebles">Muebles</option>
+                    </select>
                 </label>
                 <label>
                     Color:
-                    <input
-                        type="text"
+                    <select
                         name="Color"
                         value={product.Color}
                         onChange={handleInputChange}
-                    />
+                    >
+                        <option value="Rojo">Rojo</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Verde">Verde</option>
+                        <option value="Amarillo">Amarillo</option>
+                        <option value="Negro">Negro</option>
+                    </select>
                 </label>
                 <label>
                     Tamaño:
-                    <input
-                        type="text"
+                    <select
                         name="Tamaño"
                         value={product.Tamaño}
                         onChange={handleInputChange}
-                    />
+                    >
+                        <option value="Chico">Chico</option>
+                        <option value="Mediano">Mediano</option>
+                        <option value="Grande">Grande</option>
+                    </select>
                 </label>
 
                 <button type="submit">Guardar cambios</button>

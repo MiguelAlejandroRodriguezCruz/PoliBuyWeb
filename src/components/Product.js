@@ -15,7 +15,6 @@ const Product = ({ userId, userRole }) => {
     const [inCart, setInCart] = useState(false);
     const navigate = useNavigate();
 
-
     useEffect(() => {
         axios.get(`http://localhost:3001/product/${id}`)
             .then(res => {
@@ -61,7 +60,6 @@ const Product = ({ userId, userRole }) => {
             alert('Hubo un error al eliminar el producto');
         }
     };
-
 
     const handleAddToCart = async () => {
         try {
@@ -116,43 +114,47 @@ const Product = ({ userId, userRole }) => {
 
     return (
         <div className="product-detail">
-            <h1>{product.Nombre}</h1>
-            <img
-                src={product.Imagen ? `http://localhost:3001/${product.Imagen.replace(/\s+/g, '')}` : imagen_sin}
-                alt={product.Nombre}
-                onError={(e) => e.target.src = imagen_sin}
-            />
-            <p><strong>Precio:</strong> ${product.Precio}</p>
-            <p><strong>Descripción:</strong> {product.Descripcion}</p>
-            <p><strong>Cantidad disponible:</strong> {product.Cantidad}</p>
-            <p><strong>Oferta:</strong> {product.Oferta}</p>
-            <p><strong>Categoría:</strong> {product.Categoria}</p>
-            <p><strong>Fecha de lanzamiento:</strong> {new Date(product.Fecha).toLocaleDateString()}</p>
-            <p><strong>Ventas:</strong> {product.Ventas}</p>
-            <p><strong>Color:</strong> {product.Color}</p>
-            <p><strong>Tamaño:</strong> {product.Tamaño}</p>
-            <p><strong>Calificación:</strong> {product.Estrellas} estrellas</p>
+            <div className="product-container">
+                <div className="product-image">
+                    <img
+                        src={product.Imagen ? `http://localhost:3001/${product.Imagen.replace(/\s+/g, '')}` : imagen_sin}
+                        alt={product.Nombre}
+                        onError={(e) => e.target.src = imagen_sin}
+                    />
+                </div>
+                <div className="product-info">
+                    <h1>{product.Nombre}</h1>
+                    <p><strong>Precio:</strong> ${product.Precio}</p>
+                    <p><strong>Descripción:</strong> {product.Descripcion}</p>
+                    <p><strong>Cantidad disponible:</strong> {product.Cantidad}</p>
+                    <p><strong>Oferta:</strong> {product.Oferta}</p>
+                    <p><strong>Categoría:</strong> {product.Categoria}</p>
+                    <p><strong>Fecha de lanzamiento:</strong> {new Date(product.Fecha).toLocaleDateString()}</p>
+                    <p><strong>Ventas:</strong> {product.Ventas}</p>
+                    <p><strong>Color:</strong> {product.Color}</p>
+                    <p><strong>Tamaño:</strong> {product.Tamaño}</p>
+                    <p><strong>Calificación:</strong> {product.Estrellas} estrellas</p>
 
-            <div className="product-actions">
-                <button onClick={handleAddToCart}>
-                    {inCart ? 'Quitar del carrito' : 'Agregar al carrito'}
-                </button>
-                <button className="like-button" onClick={handleLike}>
-                    {liked ? '❤️' : '🤍'}
-                </button>
+                    <div className="product-actions">
+                        <button onClick={handleAddToCart}>
+                            {inCart ? 'Quitar del carrito' : 'Agregar al carrito'}
+                        </button>
+                        <button className="like-button" onClick={handleLike}>
+                            {liked ? '❤️' : '🤍'}
+                        </button>
 
-                {/* Mostrar los botones si el tipo es 'Vendedor' */}
-                {tipo === 'Vendedor' && (
-                    <div className="seller-actions">
-                        <button className="edit-button" onClick={handleEditProduct}>
-                            Editar producto
-                        </button>
-                        <button className="delete-button" onClick={handleDeleteProduct}>
-                            Eliminar producto
-                        </button>
+                        {tipo === 'Vendedor' && (
+                            <div className="seller-actions">
+                                <button className="edit-button" onClick={handleEditProduct}>
+                                    Editar producto
+                                </button>
+                                <button className="delete-button" onClick={handleDeleteProduct}>
+                                    Eliminar producto
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
-
+                </div>
             </div>
 
             <div className="comment-section">
@@ -180,3 +182,4 @@ const Product = ({ userId, userRole }) => {
 };
 
 export default Product;
+
