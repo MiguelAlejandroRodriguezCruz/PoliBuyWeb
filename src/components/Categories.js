@@ -7,37 +7,40 @@ import imagen_sin from '../assets/images/imagen_sin.jpg';
 const Categories = ({ userRole, userId }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedSize, setSelectedSize] = useState(''); // Estado para almacenar la opción seleccionada
-    const [showColorPalette, setShowColorPalette] = useState(false); // Estado para manejar la visibilidad de la paleta de colores
-    const [selectedColor, setSelectedColor] = useState(''); // Estado para almacenar el color seleccionado
+    const [selectedSize, setSelectedSize] = useState(''); // Estado para tamaño
+    const [selectedColor, setSelectedColor] = useState(''); // Estado para color
+    const [selectedCategory, setSelectedCategory] = useState(''); // Estado para categoría
+    const [sortOrder, setSortOrder] = useState(''); // Estado para ordenar
+    const [showColorPalette, setShowColorPalette] = useState(false);
     const navigate = useNavigate();
     const [tipo, setUserTipo] = useState(localStorage.getItem('userRole') || userRole);
     const [id, setUserId] = useState(localStorage.getItem('userId') || userId);
 
-    useEffect(() => {
-        if (userRole) {
-            localStorage.setItem('userRole', userRole);
-        }
-        if (userId) {
-            localStorage.setItem('userId', userId);
-        }
-        fetchProducts();
-    }, []);
+    // Función para limpiar el nombre de archivo
+    const sanitizeFileName = (fileName) => {
+        return fileName ? fileName.replace(/\s+/g, '') : '';
+    };
 
-    const fetchProducts = async () => {
+    useEffect(() => {
+        fetchFilteredProducts();
+    }, [selectedCategory, selectedSize, selectedColor, sortOrder]);
+
+    const fetchFilteredProducts = async () => {
         try {
-            const response = await fetch('http://localhost:3001/products');
+            let queryParams = new URLSearchParams();
+            if (selectedCategory) queryParams.append('category', selectedCategory);
+            if (selectedSize) queryParams.append('size', selectedSize);
+            if (selectedColor) queryParams.append('color', selectedColor);
+            if (sortOrder) queryParams.append('sortOrder', sortOrder);
+
+            const response = await fetch(`http://localhost:3001/productsFilter?${queryParams.toString()}`);
             const data = await response.json();
             setProducts(data);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Error fetching filtered products:', error);
             setLoading(false);
         }
-    };
-
-    const sanitizeFileName = (fileName) => {
-        return fileName ? fileName.replace(/\s+/g, '') : '';
     };
 
     const handleProductClick = (id) => {
@@ -45,15 +48,20 @@ const Categories = ({ userRole, userId }) => {
     };
 
     const handleSizeChange = (event) => {
-        const selectedOption = event.target.value;
-        setSelectedSize(selectedOption);
-        console.log("Tamaño seleccionado:", selectedOption);
+        setSelectedSize(event.target.value);
     };
 
     const handleColorClick = (color) => {
-        setSelectedColor(color); // Guardar el color seleccionado
-        console.log("Color seleccionado:", color);
-        setShowColorPalette(false); // Ocultar la paleta de colores después de seleccionar uno
+        setSelectedColor(color);
+        setShowColorPalette(false); // Ocultar paleta después de seleccionar color
+    };
+
+    const handleCategoryClick = (category) => {
+        setSelectedCategory(category);
+    };
+
+    const handleSortOrderChange = (order) => {
+        setSortOrder(order);
     };
 
     return (
@@ -65,28 +73,29 @@ const Categories = ({ userRole, userId }) => {
                         <div className="categories-item">
                             <img src={imagen_sin} alt="Ropa" />
                             <h3>Ropa</h3>
-                            <button>Ver</button>
+                            <button onClick={() => handleCategoryClick('Ropa')}>Ver</button>
                         </div>
                         <div className="categories-item">
                             <img src={imagen_sin} alt="Electronica" />
                             <h3>Electronica</h3>
-                            <button>Ver</button>
+                            <button onClick={() => handleCategoryClick('Electronica')}>Ver</button>
                         </div>
                         <div className="categories-item">
                             <img src={imagen_sin} alt="Muebles" />
                             <h3>Muebles</h3>
-                            <button>Ver</button>
+                            <button onClick={() => handleCategoryClick('Muebles')}>Ver</button>
                         </div>
                         <div className="categories-item">
                             <img src={imagen_sin} alt="Juguetes" />
                             <h3>Juguetes</h3>
-                            <button>Ver</button>
+                            <button onClick={() => handleCategoryClick('Juguetes')}>Ver</button>
                         </div>
                     </div>
                     <div className="filters-grid">
                         Filtros:
-                        <button>Recien llegados</button>
-                        <button>Ventas</button>
+                        <button onClick={() => handleSortOrderChange('recien')}>Recien llegados</button>
+                        <button onClick={() => handleSortOrderChange('ventas')}>Ventas</button>
+
                         {/* Lista desplegable de tamaño */}
                         <select value={selectedSize} onChange={handleSizeChange} className='size-select'>
                             <option value="" disabled>Tamaño</option>
@@ -94,45 +103,47 @@ const Categories = ({ userRole, userId }) => {
                             <option value="mediano">Mediano</option>
                             <option value="grande">Grande</option>
                         </select>
-                        <button 
-                        onClick={() => setShowColorPalette(!showColorPalette)} 
-                        className="color-button" 
-                        style={{ backgroundColor: selectedColor || '#007BFF', color: 'white' }} // Cambia el color según la selección
+
+                        <button
+                            onClick={() => setShowColorPalette(!showColorPalette)}
+                            className="color-button"
+                            style={{ backgroundColor: selectedColor || '#007BFF', color: 'white' }}
                         >
-                        {selectedColor ? `Color: ${selectedColor}` : 'Color'} {/* Texto del botón cambia con la selección */}
+                            {selectedColor ? `Color: ${selectedColor}` : 'Color'}
                         </button>
 
                         {/* Paleta de colores */}
                         {showColorPalette && (
-                        <div className="color-palette">
-                            <button 
-                            className="color-option" 
-                            style={{ backgroundColor: 'red' }} 
-                            onClick={() => handleColorClick('red')}
-                            ></button>
-                            <button 
-                            className="color-option" 
-                            style={{ backgroundColor: 'blue' }} 
-                            onClick={() => handleColorClick('blue')}
-                            ></button>
-                            <button 
-                            className="color-option" 
-                            style={{ backgroundColor: 'green' }} 
-                            onClick={() => handleColorClick('green')}
-                            ></button>
-                            <button 
-                            className="color-option" 
-                            style={{ backgroundColor: 'yellow' }} 
-                            onClick={() => handleColorClick('yellow')}
-                            ></button>
-                            <button 
-                            className="color-option" 
-                            style={{ backgroundColor: 'black' }} 
-                            onClick={() => handleColorClick('black')}
-                            ></button>
-                        </div>
+                            <div className="color-palette">
+                                <button
+                                    className="color-option"
+                                    style={{ backgroundColor: 'red' }}
+                                    onClick={() => handleColorClick('Rojo')}
+                                ></button>
+                                <button
+                                    className="color-option"
+                                    style={{ backgroundColor: 'blue' }}
+                                    onClick={() => handleColorClick('Azul')}
+                                ></button>
+                                <button
+                                    className="color-option"
+                                    style={{ backgroundColor: 'green' }}
+                                    onClick={() => handleColorClick('Verde')}
+                                ></button>
+                                <button
+                                    className="color-option"
+                                    style={{ backgroundColor: 'yellow' }}
+                                    onClick={() => handleColorClick('Amarillo')}
+                                ></button>
+                                <button
+                                    className="color-option"
+                                    style={{ backgroundColor: 'black' }}
+                                    onClick={() => handleColorClick('Negro')}
+                                ></button>
+                            </div>
                         )}
                     </div>
+
                     {loading ? (
                         <p>Cargando productos...</p>
                     ) : products.length === 0 ? (

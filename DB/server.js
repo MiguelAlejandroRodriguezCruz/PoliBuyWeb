@@ -186,6 +186,40 @@ app.get('/productsOffers', async (req, res) => {
     }
 });
 
+// Endpoint para obtener productos con filtros
+app.get('/productsFilter', async (req, res) => {
+    try {
+        const { category, size, color, sortOrder } = req.query;
+        let query = "SELECT * FROM Productos WHERE 1=1"; // Base de la consulta
+
+        if (category) {
+            query += ` AND Categoria = '${category}'`;
+        }
+        if (size) {
+            query += ` AND Tamaño = '${size}'`;
+        }
+        if (color) {
+            query += ` AND Color = '${color}'`;
+        }
+
+        if (sortOrder === 'recien') {
+            query += " ORDER BY Fecha DESC";
+        } else if (sortOrder === 'ventas') {
+            query += " ORDER BY Ventas DESC";
+        }
+
+        const connection = await odbc.connect(connectionString);
+        const result = await connection.query(query);
+        await connection.close();
+
+        res.status(200).json(result);
+    } catch (err) {
+        console.error('Error al obtener productos:', err);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
 // Endpoint para agregar un producto
 app.post('/createProduct', upload.single('file'), async (req, res) => {
     try {
