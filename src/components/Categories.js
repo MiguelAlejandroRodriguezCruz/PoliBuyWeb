@@ -7,13 +7,14 @@ import imagen_sin from '../assets/images/imagen_sin.jpg';
 const Categories = ({ userRole, userId }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedSize, setSelectedSize] = useState(''); // Estado para almacenar la opción seleccionada
+    const [showColorPalette, setShowColorPalette] = useState(false); // Estado para manejar la visibilidad de la paleta de colores
+    const [selectedColor, setSelectedColor] = useState(''); // Estado para almacenar el color seleccionado
     const navigate = useNavigate();
-    // Obtén los valores de localStorage si existen, de lo contrario usa los props
     const [tipo, setUserTipo] = useState(localStorage.getItem('userRole') || userRole);
     const [id, setUserId] = useState(localStorage.getItem('userId') || userId);
 
     useEffect(() => {
-        // Almacena userRole y userId en localStorage cada vez que cambien
         if (userRole) {
             localStorage.setItem('userRole', userRole);
         }
@@ -41,6 +42,18 @@ const Categories = ({ userRole, userId }) => {
 
     const handleProductClick = (id) => {
         navigate(`/Product/${id}`);
+    };
+
+    const handleSizeChange = (event) => {
+        const selectedOption = event.target.value;
+        setSelectedSize(selectedOption);
+        console.log("Tamaño seleccionado:", selectedOption);
+    };
+
+    const handleColorClick = (color) => {
+        setSelectedColor(color); // Guardar el color seleccionado
+        console.log("Color seleccionado:", color);
+        setShowColorPalette(false); // Ocultar la paleta de colores después de seleccionar uno
     };
 
     return (
@@ -71,11 +84,54 @@ const Categories = ({ userRole, userId }) => {
                         </div>
                     </div>
                     <div className="filters-grid">
-                        <button>Ordenar por</button>
+                        Filtros:
                         <button>Recien llegados</button>
                         <button>Ventas</button>
-                        <button>Color</button>
-                        <button>Tamaño</button>
+                        {/* Lista desplegable de tamaño */}
+                        <select value={selectedSize} onChange={handleSizeChange} className='size-select'>
+                            <option value="" disabled>Tamaño</option>
+                            <option value="chico">Chico</option>
+                            <option value="mediano">Mediano</option>
+                            <option value="grande">Grande</option>
+                        </select>
+                        <button 
+                        onClick={() => setShowColorPalette(!showColorPalette)} 
+                        className="color-button" 
+                        style={{ backgroundColor: selectedColor || '#007BFF', color: 'white' }} // Cambia el color según la selección
+                        >
+                        {selectedColor ? `Color: ${selectedColor}` : 'Color'} {/* Texto del botón cambia con la selección */}
+                        </button>
+
+                        {/* Paleta de colores */}
+                        {showColorPalette && (
+                        <div className="color-palette">
+                            <button 
+                            className="color-option" 
+                            style={{ backgroundColor: 'red' }} 
+                            onClick={() => handleColorClick('red')}
+                            ></button>
+                            <button 
+                            className="color-option" 
+                            style={{ backgroundColor: 'blue' }} 
+                            onClick={() => handleColorClick('blue')}
+                            ></button>
+                            <button 
+                            className="color-option" 
+                            style={{ backgroundColor: 'green' }} 
+                            onClick={() => handleColorClick('green')}
+                            ></button>
+                            <button 
+                            className="color-option" 
+                            style={{ backgroundColor: 'yellow' }} 
+                            onClick={() => handleColorClick('yellow')}
+                            ></button>
+                            <button 
+                            className="color-option" 
+                            style={{ backgroundColor: 'black' }} 
+                            onClick={() => handleColorClick('black')}
+                            ></button>
+                        </div>
+                        )}
                     </div>
                     {loading ? (
                         <p>Cargando productos...</p>
