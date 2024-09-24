@@ -311,6 +311,7 @@ textarea {
   font-size: 38px;
   border-bottom: 1px solid #eee;
   padding-bottom: 5px;
+  color: #B998B3;
 }
 
 .article-detail .image-wrap {
@@ -784,7 +785,7 @@ textarea {
 }
 
 .filters-grid button:hover {
-  background-color: #0056b3;
+  background-color: #B998B3;
 }
 
 .product-item img {
@@ -805,7 +806,7 @@ textarea {
 .filters-grid button {
   margin-top: 10px;
   padding: 10px 15px;
-  background-color: #007BFF; /* Color predeterminado para todos los botones */
+  background-color: #E7A8B1; /* Color predeterminado para todos los botones */
   color: white;
   margin-left: 20px;
   margin-right: 20px;
@@ -818,13 +819,13 @@ textarea {
 }
 
 .product-item button:hover {
-  background-color: #0056b3;
+  background-color: #B998B3;
 }
 
 .filters-grid select {
   margin-top: 10px;
   padding: 10px 15px;
-  background-color: #007BFF;
+  background-color: #E7A8B1;
   color: white;
   margin-left: 30px;
   margin-right: 30px;

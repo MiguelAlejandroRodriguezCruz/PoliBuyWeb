@@ -3,6 +3,10 @@ import Slider from './Slider';
 import Sidebar from './Sidebar';
 import { useNavigate } from 'react-router-dom';
 import imagen_sin from '../assets/images/imagen_sin.jpg';
+import Ropa_muestra from '../assets/images/Ropa_muestra.jpg';
+import Electronica_muestra from '../assets/images/Electronica_muestra.jpg';
+import Muebles_muestra from '../assets/images/Muebles_muestra.jpg';
+import Juguetes_muestra from '../assets/images/Juguetes_muestra.jpg';
 
 const Categories = ({ userRole, userId }) => {
     const [products, setProducts] = useState([]);
@@ -66,34 +70,34 @@ const Categories = ({ userRole, userId }) => {
 
     return (
         <div id="blog">
-            <Slider title="Categorias" size="slider-small" />
+            <Slider title="Categorías" size="slider-small" />
             <div className="center">
                 <div id="content">
                     <div className="categories-grid">
                         <div className="categories-item">
-                            <img src={imagen_sin} alt="Ropa" />
+                            <img src={Ropa_muestra} alt="Ropa" />
                             <h3>Ropa</h3>
                             <button onClick={() => handleCategoryClick('Ropa')}>Ver</button>
                         </div>
                         <div className="categories-item">
-                            <img src={imagen_sin} alt="Electronica" />
-                            <h3>Electronica</h3>
+                            <img src={Electronica_muestra} alt="Electronica" />
+                            <h3>Electrónica</h3>
                             <button onClick={() => handleCategoryClick('Electronica')}>Ver</button>
                         </div>
                         <div className="categories-item">
-                            <img src={imagen_sin} alt="Muebles" />
+                            <img src={Muebles_muestra} alt="Muebles" />
                             <h3>Muebles</h3>
                             <button onClick={() => handleCategoryClick('Muebles')}>Ver</button>
                         </div>
                         <div className="categories-item">
-                            <img src={imagen_sin} alt="Juguetes" />
+                            <img src={Juguetes_muestra} alt="Juguetes" />
                             <h3>Juguetes</h3>
                             <button onClick={() => handleCategoryClick('Juguetes')}>Ver</button>
                         </div>
                     </div>
                     <div className="filters-grid">
                         Filtros:
-                        <button onClick={() => handleSortOrderChange('recien')}>Recien llegados</button>
+                        <button onClick={() => handleSortOrderChange('recien')}>Recién llegados</button>
                         <button onClick={() => handleSortOrderChange('ventas')}>Ventas</button>
 
                         {/* Lista desplegable de tamaño */}
@@ -107,7 +111,7 @@ const Categories = ({ userRole, userId }) => {
                         <button
                             onClick={() => setShowColorPalette(!showColorPalette)}
                             className="color-button"
-                            style={{ backgroundColor: selectedColor || '#007BFF', color: 'white' }}
+                            style={{ backgroundColor: selectedColor || '#E7A8B1', color: 'white' }}
                         >
                             {selectedColor ? `Color: ${selectedColor}` : 'Color'}
                         </button>
