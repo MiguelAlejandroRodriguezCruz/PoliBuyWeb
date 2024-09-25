@@ -68,6 +68,11 @@ const Categories = ({ userRole, userId }) => {
         setSortOrder(order);
     };
 
+    const isValidNumber = (value) => {
+        // Verifica si el valor es un número válido
+        return !isNaN(value) && value !== null && value !== undefined;
+    };
+
     return (
         <div id="blog">
             <Slider title="Categorías" size="slider-small" />
@@ -154,20 +159,49 @@ const Categories = ({ userRole, userId }) => {
                         <h1>No hay productos actualmente</h1>
                     ) : (
                         <div className="product-grid">
-                            {products.map((product) => (
-                                <div className="product-item" key={product.ID}>
-                                    <img
-                                        src={product.Imagen
-                                            ? `http://localhost:3001/${sanitizeFileName(product.Imagen)}`
-                                            : imagen_sin}
-                                        alt={product.Nombre}
-                                        onError={(e) => (e.target.src = imagen_sin)}
-                                    />
-                                    <h3>{product.Nombre}</h3>
-                                    <p>${product.Precio}</p>
-                                    <button onClick={() => handleProductClick(product.ID)}>Ver producto</button>
-                                </div>
-                            ))}
+                            {products.map((product) => {
+                                const precio = parseFloat(product.Precio);
+                                const descuento = parseFloat(product.Oferta);
+
+                                // Validar si el descuento es válido y mayor que 0
+                                const precioConDescuento = isValidNumber(precio) && isValidNumber(descuento) && descuento > 0
+                                    ? (precio - (precio * (descuento / 100))).toFixed(2)
+                                    : precio.toFixed(2); // Si no hay descuento, mostrar precio original
+
+                                return (
+                                    <div className="product-item" key={product.ID}>
+                                        <img
+                                            src={product.Imagen
+                                                ? `http://localhost:3001/${sanitizeFileName(product.Imagen)}`
+                                                : imagen_sin}
+                                            alt={product.Nombre}
+                                            onError={(e) => (e.target.src = imagen_sin)}
+                                        />
+                                        <h3>{product.Nombre}</h3>
+                                        <p>
+                                            {/* Mostrar precio original tachado solo si el descuento es mayor a 0 */}
+                                            {isValidNumber(descuento) && descuento > 0 && (
+                                                <>
+                                                    <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                                                        ${precio.toFixed(2)}
+                                                    </span>{' '}
+                                                    {/* Precio con descuento */}
+                                                    <span style={{ fontWeight: 'bold', color: 'green' }}>
+                                                        ${precioConDescuento}
+                                                    </span>
+                                                </>
+                                            )}
+                                            {/* Si no hay descuento, mostrar solo el precio normal */}
+                                            {!descuento || descuento === 0 ? (
+                                                <span style={{ fontWeight: 'normal', color: 'black' }}>
+                                                    ${precio.toFixed(2)}
+                                                </span>
+                                            ) : null}
+                                        </p>
+                                        <button onClick={() => handleProductClick(product.ID)}>Ver producto</button>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>

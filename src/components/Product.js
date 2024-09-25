@@ -124,7 +124,20 @@ const Product = ({ userId, userRole }) => {
                 </div>
                 <div className="product-info">
                     <h1>{product.Nombre}</h1>
-                    <p><strong>Precio:</strong> ${product.Precio}</p>
+                    <p><strong>Precio:</strong> 
+                        {product.Oferta > 0 ? (
+                            <>
+                                <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                                    ${product.Precio}
+                                </span>{' '}
+                                <span>
+                                    ${(product.Precio - (product.Precio * product.Oferta / 100)).toFixed(2)}
+                                </span>
+                            </>
+                        ) : (
+                            <span>${product.Precio}</span>
+                        )}
+                    </p>
                     <p><strong>Descripción:</strong> {product.Descripcion}</p>
                     <p><strong>Cantidad disponible:</strong> {product.Cantidad}</p>
                     <p><strong>Oferta:</strong> {product.Oferta}</p>
@@ -182,4 +195,5 @@ const Product = ({ userId, userRole }) => {
 };
 
 export default Product;
+
 

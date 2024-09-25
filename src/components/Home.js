@@ -86,7 +86,20 @@ const Home = ({ userRole, userId }) => {
                                         onError={(e) => e.target.src = imagen_sin} // Si falla la carga de imagen, muestra la imagen por defecto
                                     />
                                     <h3>{product.Nombre}</h3>
-                                    <p>${product.Precio}</p>
+                                    <p>
+                                        {product.Oferta > 0 ? (
+                                            <>
+                                                <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                                                    ${product.Precio}
+                                                </span>{' '}
+                                                <span>
+                                                    ${product.Precio - (product.Precio * product.Oferta / 100).toFixed(2)}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span>${product.Precio}</span>
+                                        )}
+                                    </p>
                                     <button onClick={() => handleViewProduct(product.ID)}>Ver producto</button>
                                 </div>
                             ))}
@@ -145,3 +158,4 @@ const styles = {
 };
 
 export default Home;
+

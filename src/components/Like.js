@@ -120,12 +120,23 @@ class Like extends Component {
                     />
                     <div className="item-info">
                       <p>{producto.Nombre}</p>
-                      <p>Precio: ${producto.Precio}</p>
+                      <p>{producto.Oferta}</p>
                       <p>Cantidad disponible: {producto.Cantidad}</p>
                     </div>
                   </div>
                   <div className="item-actions">
-                    <p className="item-price">${producto.Precio}</p>
+                    {/* Mostrar precio con descuento si aplica */}
+                    {producto.Oferta > 0 ? (
+                      <p className="item-price">
+                        <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                          ${producto.Precio.toFixed(2)}
+                        </span>{' '}
+                        ${(producto.Precio - (producto.Precio * (producto.Oferta / 100))).toFixed(2)}
+                      </p>
+                    ) : (
+                      <p className="item-price">${producto.Precio.toFixed(2)}</p>
+                    )}
+                    
                     <button
                       className="remove-item"
                       onClick={() => this.handleRemoveFromLike(producto.ID)}
@@ -140,7 +151,6 @@ class Like extends Component {
                         {productosEnCarrito.includes(producto.ID) ? 'Quitar del carrito' : 'Agregar al carrito'}
                       </button>
                     </div>
-
                   </div>
                 </div>
               ))}

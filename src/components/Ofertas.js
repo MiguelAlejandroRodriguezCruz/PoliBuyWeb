@@ -8,12 +8,10 @@ const Ofertas = ({ userRole, userId }) => {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    // Obtén los valores de localStorage si existen, de lo contrario usa los props
     const [tipo, setUserTipo] = useState(localStorage.getItem('userRole') || userRole);
     const [id, setUserId] = useState(localStorage.getItem('userId') || userId);
 
     useEffect(() => {
-        // Almacena userRole y userId en localStorage cada vez que cambien
         if (userRole) {
             localStorage.setItem('userRole', userRole);
         }
@@ -38,13 +36,16 @@ const Ofertas = ({ userRole, userId }) => {
     };
 
     const sanitizeFileName = (fileName) => {
-        // Elimina espacios y otros caracteres no deseados
         return fileName ? fileName.replace(/\s+/g, '') : '';
     };
 
     const handleViewProduct = (id) => {
-        // Navega a la página del producto con la ID correspondiente
         navigate(`/Product/${id}`);
+    };
+
+    const isValidNumber = (value) => {
+        // Verifica si el valor es un número válido
+        return !isNaN(value) && value !== null && value !== undefined;
     };
 
     return (
@@ -58,21 +59,39 @@ const Ofertas = ({ userRole, userId }) => {
                         <h1>No hay ofertas actualmente</h1>
                     ) : (
                         <div className="product-grid">
-                            {offers.map((product) => (
-                                <div className="product-item" key={product.ID}>
-                                    {/* Sanitiza el nombre del archivo de imagen */}
-                                    <img
-                                        src={product.Imagen
-                                            ? `http://localhost:3001/${sanitizeFileName(product.Imagen)}`
-                                            : imagen_sin}
-                                        alt={product.Nombre}
-                                        onError={(e) => e.target.src = imagen_sin} // Si falla la carga, muestra imagen por defecto
-                                    />
-                                    <h3>{product.Nombre}</h3>
-                                    <p>${product.Precio}</p>
-                                    <button onClick={() => handleViewProduct(product.ID)}>Ver producto</button>
-                                </div>
-                            ))}
+                            {offers.map((product) => {
+                                const precio = parseFloat(product.Precio);
+                                const descuento = parseFloat(product.Oferta);
+
+                                // Validar si precio y descuento son números válidos antes de hacer el cálculo
+                                const precioConDescuento = isValidNumber(precio) && isValidNumber(descuento)
+                                    ? (precio - (precio * (descuento / 100))).toFixed(2)
+                                    : precio.toFixed(2); // Si no hay descuento válido, se muestra el precio original
+
+                                return (
+                                    <div className="product-item" key={product.ID}>
+                                        <img
+                                            src={product.Imagen
+                                                ? `http://localhost:3001/${sanitizeFileName(product.Imagen)}`
+                                                : imagen_sin}
+                                            alt={product.Nombre}
+                                            onError={(e) => (e.target.src = imagen_sin)}
+                                        />
+                                        <h3>{product.Nombre}</h3>
+                                        <p>
+                                            {/* Precio original tachado */}
+                                            <span style={{ textDecoration: 'line-through', color: 'red' }}>
+                                                ${precio.toFixed(2)}
+                                            </span>{' '}
+                                            {/* Precio con descuento */}
+                                            <span style={{ fontWeight: 'bold', color: 'green' }}>
+                                                ${precioConDescuento}
+                                            </span>
+                                        </p>
+                                        <button onClick={() => handleViewProduct(product.ID)}>Ver producto</button>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -83,3 +102,4 @@ const Ofertas = ({ userRole, userId }) => {
 };
 
 export default Ofertas;
+
