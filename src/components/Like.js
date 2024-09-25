@@ -51,6 +51,33 @@ class Like extends Component {
       });
   };
 
+  handleAddToCart = async (productoId) => {
+    const userId = localStorage.getItem('userId');
+
+    try {
+      const response = await axios.post('http://localhost:3001/checkCart', { usuario: userId, producto: productoId });
+      const inCart = response.data.inCart;
+
+      if (inCart) {
+        await axios.delete('http://localhost:3001/deleteShopCart', { data: { usuario: userId, producto: productoId } });
+        alert('Producto eliminado del carrito');
+      } else {
+        await axios.post('http://localhost:3001/shopCart', { usuario: userId, producto: productoId });
+        alert('Producto agregado al carrito');
+      }
+
+      // Actualiza el estado para reflejar el cambio en el carrito
+      this.setState((prevState) => ({
+        productos: prevState.productos.map((producto) =>
+          producto.ID === productoId ? { ...producto, inCart: !inCart } : producto
+        )
+      }));
+    } catch (error) {
+      console.error('Error al manejar el carrito:', error);
+      alert('Hubo un error con el carrito');
+    }
+  };
+
   render() {
     const { productos } = this.state;
 
@@ -58,11 +85,10 @@ class Like extends Component {
       <div id="Shopcart">
         <Slider />
         <div className="shopcart-container">
-          <h2 className="shopcart-title">Articulos que me gustan</h2>
+          <h2 className="shopcart-title">Artículos que me gustan</h2>
           <div className="shopcart-content">
             {/* Sección de productos en el carrito */}
             <div className="shopcart-items">
-
               {/* Mapea los productos del estado para generar cada bloque */}
               {productos.map((producto, index) => (
                 <div key={index} className="shopcart-item">
@@ -79,20 +105,26 @@ class Like extends Component {
                     </div>
                   </div>
                   <div className="item-actions">
-
                     <p className="item-price">${producto.Precio}</p>
                     <button
-                      className="remove-item"
+                      className="delete-button"
                       onClick={() => this.handleRemoveFromCart(producto.ID)}
                     >
                       🗑️
                     </button>
+                    <div className="seller-actions">
+                      <button
+                        className={producto.inCart ? 'delete-button' : 'edit-button'}
+                        onClick={() => this.handleAddToCart(producto.ID)}
+                      >
+                        {producto.inCart ? 'Quitar del carrito' : 'Agregar al carrito'}
+                      </button>
+                    </div>
+
                   </div>
                 </div>
               ))}
             </div>
-
-
           </div>
         </div>
       </div>
