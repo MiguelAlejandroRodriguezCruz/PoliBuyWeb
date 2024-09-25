@@ -746,6 +746,15 @@ textarea {
   gap: 20px;
 }
 
+.product-grid button {
+  background-color: #E7A8B1;
+  color:#ffff;
+}
+
+.product-grid button:hover {
+  background-color: #B998B3;
+}
+
 .product-item {
   flex: 1 1 calc(28% - 20px);
   border: 1px solid #ccc;
@@ -770,6 +779,15 @@ textarea {
   text-align: center;
   max-width: calc(20% - 20px);
   /* Evita que se hagan más grandes */
+}
+
+.categories-item button {
+  background-color: #E7A8B1;
+  color:#ffff;
+}
+
+.categories-item button:hover {
+  background-color: #B998B3;
 }
 
 .categories-item img {
@@ -887,7 +905,7 @@ textarea {
 }
 
 .product-actions button:hover {
-  background-color: #0056b3;
+  background-color: #B998B3;
 }
 
 .seller-actions {
@@ -1050,4 +1068,54 @@ textarea {
 .edit-product select:focus {
   border-color: #888; /* Borde más oscuro al hacer focus */
   outline: none;
+}
+
+/*Reutilizamos el CSS de Editar Producto*/
+.edit-product {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.edit-product form {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-product .form-group {
+  margin-bottom: 20px;
+}
+
+.edit-product label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.edit-product input,
+.edit-product textarea,
+.edit-product select {
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.edit-product button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
 }
