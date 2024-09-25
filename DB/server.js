@@ -2,7 +2,7 @@ const express = require('express');
 const odbc = require('odbc');
 const Stripe = require('stripe');
 const cors = require('cors');
-const stripe = Stripe('tu_clave_secreta');
+const stripe = Stripe('sk_test_51Q1w9NG8LDrUHhDf0yhrBZmh2CEZUzxBLiNZkjrJ9sxE70Mglhm9mkC1J1Frx7yP4x5iGsSPUVWWFs4M9r9MMb1a00DVzOweH3');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs'); // Asegúrate de importar el módulo fs
@@ -53,8 +53,48 @@ app.use((err, req, res, next) => {
 });
 
 // Pagos 
+// Endpoint para pago aprobado
+app.get('/success', async (req, res) => {
+
+});
+// Endpoint para pago cancelado
+app.get('/cancel', async (req, res) => {
+
+});
 // Endpoint para crear el Payment Intent
 app.post('/create-payment-intent', async (req, res) => {
+
+    const session = await stripe.checkout.sessions.create({
+        line_items: [
+            {
+                price_data: {
+                    product_data: {
+                        name: 'laptop',
+                        description: 'Gaming Laptop',
+                    },
+                    currency: 'mxn',
+                    unit_amount: 1000,
+                },
+                quantity: 1,
+            },
+            {
+                price_data: {
+                    product_data: {
+                        name: 'TV',
+                        description: 'Smart TV',
+                    },
+                    currency: 'mxn',
+                    unit_amount: 2000,
+                },
+                quantity: 1,
+            }
+        ],
+        mode: 'payment',
+    })
+
+    return res.json(session);
+    /**
+     
     const { productos, userId } = req.body;
 
     // Calcular el total en centavos de MXN
@@ -75,6 +115,7 @@ app.post('/create-payment-intent', async (req, res) => {
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
+     */
 });
 // Endpoint para registrar un usuario
 app.post('/registerUser', async (req, res) => {
@@ -430,7 +471,7 @@ app.get('/viewLike/:userId', async (req, res) => {
         const { userId } = req.params;
         const connection = await odbc.connect(connectionString);
 
-        const query = `SELECT p.ID, p.Nombre, p.Imagen, p.Cantidad, p.Precio FROM Productos as p INNER JOIN MeGustan as c on p.ID = c.Producto_ID WHERE c.Usuario_ID = ${userId}`;
+        const query = `SELECT p.ID, p.Nombre, p.Imagen, p.Cantidad, p.Precio, p.Oferta FROM Productos as p INNER JOIN MeGustan as c on p.ID = c.Producto_ID WHERE c.Usuario_ID = ${userId}`;
 
         const result = await connection.query(query);
 
