@@ -7,79 +7,98 @@ class Like extends Component {
     super(props);
     this.state = {
       productos: [], // Estado para almacenar los productos
+      productosEnCarrito: [] // Estado para almacenar los productos que están en el carrito
     };
   }
 
   componentDidMount() {
     const userId = localStorage.getItem('userId'); // Supongo que el userId está almacenado en localStorage
 
-    // Llamada a la API para obtener los productos en el carrito del usuario
+    // Llamada a la API para obtener los productos que le gustan al usuario
     axios.get(`http://localhost:3001/viewLike/${userId}`)
       .then((response) => {
-        // Actualiza el estado con los productos obtenidos
-        this.setState({ productos: response.data });
+        const productos = response.data;
+        this.setState({ productos });
+
+        // Verificar si cada producto está en el carrito
+        productos.forEach(producto => {
+          this.checkProductInCart(userId, producto.ID);
+        });
       })
       .catch((error) => {
-        console.error('Error al obtener el carrito:', error);
+        console.error('Error al obtener los productos:', error);
       });
   }
 
-  handleQuantityChange = (index, newQuantity) => {
-    this.setState((prevState) => {
-      const updatedProductos = [...prevState.productos];
-      updatedProductos[index].selectedCantidad = newQuantity;
-      return { productos: updatedProductos };
-    });
+  checkProductInCart = (userId, productoId) => {
+    // Llamada a la API para verificar si el producto está en el carrito
+    axios.post('http://localhost:3001/checkCart', { usuario: userId, producto: productoId })
+      .then((response) => {
+        if (response.data.inCart) {
+          this.setState((prevState) => ({
+            productosEnCarrito: [...prevState.productosEnCarrito, productoId]
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error('Error al verificar el carrito:', error);
+      });
   };
 
-  handleRemoveFromCart = (productoId) => {
+  handleAddOrRemoveFromCart = (productoId) => {
+    const userId = localStorage.getItem('userId');
+    const { productosEnCarrito } = this.state;
+
+    if (productosEnCarrito.includes(productoId)) {
+      // Si el producto está en el carrito, se quita
+      axios.delete('http://localhost:3001/deleteShopCart', {
+        data: { usuario: userId, producto: productoId }
+      })
+        .then(() => {
+          alert('Producto eliminado del carrito');
+          this.setState((prevState) => ({
+            productosEnCarrito: prevState.productosEnCarrito.filter(id => id !== productoId)
+          }));
+        })
+        .catch((error) => {
+          console.error('Error al eliminar el producto del carrito:', error);
+          alert('Hubo un error al eliminar el producto del carrito');
+        });
+    } else {
+      // Si el producto no está en el carrito, se agrega
+      axios.post('http://localhost:3001/shopCart', { usuario: userId, producto: productoId })
+        .then(() => {
+          alert('Producto agregado al carrito');
+          this.setState((prevState) => ({
+            productosEnCarrito: [...prevState.productosEnCarrito, productoId]
+          }));
+        })
+        .catch((error) => {
+          console.error('Error al agregar el producto al carrito:', error);
+          alert('Hubo un error al agregar el producto al carrito');
+        });
+    }
+  };
+
+  handleRemoveFromLike = (productoId) => {
     const userId = localStorage.getItem('userId');
 
-    axios.delete('http://localhost:3001/deleteLike', {
-      data: { usuario: userId, producto: productoId }
-    })
+    axios.post('http://localhost:3001/deleteLike', { usuario: userId, producto: productoId })
       .then((response) => {
         console.log(response.data.message);
 
-        // Eliminar el producto del carrito en el frontend
+        // Eliminar el producto de "me gusta" en el frontend
         this.setState((prevState) => ({
           productos: prevState.productos.filter((producto) => producto.ID !== productoId)
         }));
       })
       .catch((error) => {
-        console.error('Error al eliminar el producto del carrito:', error);
+        console.error('Error al eliminar el producto de "me gusta":', error);
       });
   };
 
-  handleAddToCart = async (productoId) => {
-    const userId = localStorage.getItem('userId');
-
-    try {
-      const response = await axios.post('http://localhost:3001/checkCart', { usuario: userId, producto: productoId });
-      const inCart = response.data.inCart;
-
-      if (inCart) {
-        await axios.delete('http://localhost:3001/deleteShopCart', { data: { usuario: userId, producto: productoId } });
-        alert('Producto eliminado del carrito');
-      } else {
-        await axios.post('http://localhost:3001/shopCart', { usuario: userId, producto: productoId });
-        alert('Producto agregado al carrito');
-      }
-
-      // Actualiza el estado para reflejar el cambio en el carrito
-      this.setState((prevState) => ({
-        productos: prevState.productos.map((producto) =>
-          producto.ID === productoId ? { ...producto, inCart: !inCart } : producto
-        )
-      }));
-    } catch (error) {
-      console.error('Error al manejar el carrito:', error);
-      alert('Hubo un error con el carrito');
-    }
-  };
-
   render() {
-    const { productos } = this.state;
+    const { productos, productosEnCarrito } = this.state;
 
     return (
       <div id="Shopcart">
@@ -87,8 +106,9 @@ class Like extends Component {
         <div className="shopcart-container">
           <h2 className="shopcart-title">Artículos que me gustan</h2>
           <div className="shopcart-content">
-            {/* Sección de productos en el carrito */}
+            {/* Sección de productos */}
             <div className="shopcart-items">
+
               {/* Mapea los productos del estado para generar cada bloque */}
               {productos.map((producto, index) => (
                 <div key={index} className="shopcart-item">
@@ -107,23 +127,24 @@ class Like extends Component {
                   <div className="item-actions">
                     <p className="item-price">${producto.Precio}</p>
                     <button
-                      className="delete-button"
-                      onClick={() => this.handleRemoveFromCart(producto.ID)}
+                      className="remove-item"
+                      onClick={() => this.handleRemoveFromLike(producto.ID)}
                     >
                       🗑️
                     </button>
                     <div className="seller-actions">
                       <button
-                        className={producto.inCart ? 'delete-button' : 'edit-button'}
-                        onClick={() => this.handleAddToCart(producto.ID)}
+                        className="cart-item"
+                        onClick={() => this.handleAddOrRemoveFromCart(producto.ID)}
                       >
-                        {producto.inCart ? 'Quitar del carrito' : 'Agregar al carrito'}
+                        {productosEnCarrito.includes(producto.ID) ? 'Quitar del carrito' : 'Agregar al carrito'}
                       </button>
                     </div>
 
                   </div>
                 </div>
               ))}
+
             </div>
           </div>
         </div>
