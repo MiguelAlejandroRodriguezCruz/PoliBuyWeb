@@ -430,7 +430,7 @@ app.get('/viewCart/:userId', async (req, res) => {
         const { userId } = req.params;
         const connection = await odbc.connect(connectionString);
 
-        const query = `SELECT p.ID, p.Nombre, p.Imagen, p.Cantidad, p.Precio FROM Productos as p INNER JOIN Carrito as c on p.ID = c.Producto_ID WHERE c.Usuario_ID = ${userId}`;
+        const query = `SELECT p.ID, p.Nombre, p.Imagen, p.Cantidad, p.Precio, p.Oferta FROM Productos as p INNER JOIN Carrito as c on p.ID = c.Producto_ID WHERE c.Usuario_ID = ${userId}`;
 
         const result = await connection.query(query);
 

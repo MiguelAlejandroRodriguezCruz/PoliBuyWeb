@@ -71,6 +71,10 @@ class Shopcart extends Component {
     }
   };
 
+  // Función para calcular el precio con descuento
+  calcularPrecioConDescuento = (precio, oferta) => {
+    return oferta > 0 ? precio - (precio * (oferta / 100)) : precio;
+  };
 
   render() {
     const { productos } = this.state;
@@ -96,7 +100,6 @@ class Shopcart extends Component {
                     />
                     <div className="item-info">
                       <p>{producto.Nombre}</p>
-                      <p>Precio: ${producto.Precio}</p>
                       <p>Cantidad disponible: {producto.Cantidad}</p>
                     </div>
                   </div>
@@ -117,7 +120,11 @@ class Shopcart extends Component {
                         ))
                       }
                     </select>
-                    <p className="item-price">${producto.Precio}</p>
+
+                    {/* Mostrar solo el precio con descuento si aplica */}
+                    <p className="item-price">
+                      ${this.calcularPrecioConDescuento(producto.Precio, producto.Oferta).toFixed(2)}
+                    </p>
                     <button
                       className="remove-item"
                       onClick={() => this.handleRemoveFromCart(producto.ID)}
@@ -135,7 +142,10 @@ class Shopcart extends Component {
               <p>
                 Artículos en carrito: $
                 {productos.reduce(
-                  (acc, producto) => acc + producto.Precio * (producto.selectedCantidad || 1),
+                  (acc, producto) =>
+                    acc +
+                    this.calcularPrecioConDescuento(producto.Precio, producto.Oferta) *
+                    (producto.selectedCantidad || 1),
                   0
                 ).toFixed(2)}
               </p>
@@ -145,7 +155,10 @@ class Shopcart extends Component {
                 Total: $
                 {(
                   productos.reduce(
-                    (acc, producto) => acc + producto.Precio * (producto.selectedCantidad || 1),
+                    (acc, producto) =>
+                      acc +
+                      this.calcularPrecioConDescuento(producto.Precio, producto.Oferta) *
+                      (producto.selectedCantidad || 1),
                     0
                   )
                 ).toFixed(2)}
@@ -165,3 +178,4 @@ class Shopcart extends Component {
 }
 
 export default Shopcart;
+
