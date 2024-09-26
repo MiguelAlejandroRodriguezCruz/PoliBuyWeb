@@ -59,8 +59,16 @@ class Shopcart extends Component {
   handleCheckout = async () => {
     const { productos } = this.state;
 
+    // Preparar los productos con el precio final calculado
+    const productosConPrecioFinal = productos.map(producto => ({
+      nombre: producto.Nombre,
+      descripcion: producto.Descripcion,
+      cantidad: producto.selectedCantidad || 1,
+      precioFinal: this.calcularPrecioConDescuento(producto.Precio, producto.Oferta).toFixed(2) * 100, // Stripe espera el precio en centavos
+    }));
+
     try {
-      const response = await axios.post('http://localhost:3001/create-payment-intent', { productos });
+      const response = await axios.post('http://localhost:3001/create-payment-intent', { productos: productosConPrecioFinal });
       const { id: sessionId } = response.data;
 
       // Redirigir a Stripe Checkout
@@ -70,6 +78,7 @@ class Shopcart extends Component {
       console.error('Error during checkout:', error);
     }
   };
+
 
   // Función para calcular el precio con descuento
   calcularPrecioConDescuento = (precio, oferta) => {

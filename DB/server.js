@@ -63,36 +63,30 @@ app.get('/cancel', async (req, res) => {
 });
 // Endpoint para crear el Payment Intent
 app.post('/create-payment-intent', async (req, res) => {
-    const { productos } = req.body; // Recibir los productos desde el cuerpo de la solicitud
+    const { productos } = req.body;
 
-    try {
-        // Crear una lista de items basada en los productos enviados desde el carrito
-        const lineItems = productos.map((producto) => ({
-            price_data: {
-                currency: 'mxn',
-                product_data: {
-                    name: producto.Nombre,
-                    description: producto.Descripcion, // Asegúrate de que 'Descripcion' esté disponible en tu producto
-                },
-                unit_amount: Math.round(producto.Precio * 100), // Stripe maneja precios en centavos
+    const lineItems = productos.map(producto => ({
+        price_data: {
+            currency: 'mxn',
+            product_data: {
+                name: producto.nombre,
+                description: producto.descripcion,
             },
-            quantity: producto.selectedCantidad || 1, // Utiliza la cantidad seleccionada o 1 por defecto
-        }));
+            unit_amount: producto.precioFinal, // Precio ya calculado en centavos
+        },
+        quantity: producto.cantidad,
+    }));
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: lineItems,
-            mode: 'payment',
-            success_url: `http://localhost:3000/ShopCart`, // URL de éxito
-            cancel_url: `http://localhost:3000/Cancel`,   // URL de cancelación
-        });
+    const session = await stripe.checkout.sessions.create({
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: 'http://localhost:3000/ShopCart',
+        cancel_url: 'http://localhost:3000/Cancel',
+    });
 
-        return res.json({ id: session.id });
-    } catch (error) {
-        console.error('Error creating payment session:', error);
-        res.status(500).json({ error: 'Failed to create payment session' });
-    }
+    return res.json(session);
 });
+
 
 // Endpoint para registrar un usuario
 app.post('/registerUser', async (req, res) => {
