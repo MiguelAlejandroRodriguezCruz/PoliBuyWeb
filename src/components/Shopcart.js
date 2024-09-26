@@ -2,57 +2,9 @@ import React, { Component } from 'react';
 import Slider from './Slider';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 // Cargar el cliente de Stripe con tu clave pública
-const stripePromise = loadStripe('tu_clave_publica_de_stripe');
-
-// Componente para manejar el formulario de tarjeta de crédito
-function CheckoutForm({ productos }) {
-  const stripe = useStripe();
-  const elements = useElements();
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    const userId = localStorage.getItem('userId');
-
-    // Crear el intent de pago desde el backend
-    const { data: { clientSecret } } = await axios.post('http://localhost:3001/create-payment-intent', {
-      productos,
-      userId,
-    });
-
-    const cardElement = elements.getElement(CardElement);
-
-    // Confirmar el pago con la tarjeta ingresada
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardElement,
-      },
-    });
-
-    if (error) {
-      console.error('Error during payment:', error.message);
-    } else {
-      console.log('Pago exitoso:', paymentIntent);
-      alert('Pago realizado con éxito!');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <CardElement />
-      <button type="submit" disabled={!stripe}>
-        Pagar
-      </button>
-    </form>
-  );
-}
+const stripePromise = loadStripe('pk_test_51Q1w9NG8LDrUHhDfKBH7FdsOMCM4kSiverbiLbCMTyu1TroSVScTWJbfim6anccHXIftAV55krKvAkvz1e57UhC000Ewot4DQN');
 
 class Shopcart extends Component {
   constructor(props) {
@@ -104,13 +56,24 @@ class Shopcart extends Component {
       });
   };
 
-  handleCheckout = () => {
-    // Mostrar el formulario de pago
-    this.setState({ showPaymentForm: true });
+  handleCheckout = async () => {
+    const { productos } = this.state;
+
+    try {
+      const response = await axios.post('http://localhost:3001/create-payment-intent', { productos });
+      const { id: sessionId } = response.data;
+
+      // Redirigir a Stripe Checkout
+      const stripe = await stripePromise;
+      await stripe.redirectToCheckout({ sessionId });
+    } catch (error) {
+      console.error('Error during checkout:', error);
+    }
   };
 
+
   render() {
-    const { productos, showPaymentForm } = this.state;
+    const { productos } = this.state;
 
     return (
       <div id="Shopcart">
@@ -187,15 +150,9 @@ class Shopcart extends Component {
                   )
                 ).toFixed(2)}
               </h2>
-              {!showPaymentForm ? (
-                <button className="checkout-button" onClick={this.handleCheckout}>
-                  PROCEDER AL PAGO
-                </button>
-              ) : (
-                <Elements stripe={stripePromise}>
-                  <CheckoutForm productos={productos} />
-                </Elements>
-              )}
+              <button className="checkout-button" onClick={this.handleCheckout}>
+                PROCEDER AL PAGO
+              </button>
               <button className="discount-code">
                 CÓDIGO DE DESCUENTO / TARJETA DE REGALO
               </button>

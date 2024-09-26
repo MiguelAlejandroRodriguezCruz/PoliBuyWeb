@@ -63,60 +63,37 @@ app.get('/cancel', async (req, res) => {
 });
 // Endpoint para crear el Payment Intent
 app.post('/create-payment-intent', async (req, res) => {
-
-    const session = await stripe.checkout.sessions.create({
-        line_items: [
-            {
-                price_data: {
-                    product_data: {
-                        name: 'laptop',
-                        description: 'Gaming Laptop',
-                    },
-                    currency: 'mxn',
-                    unit_amount: 1000,
-                },
-                quantity: 1,
-            },
-            {
-                price_data: {
-                    product_data: {
-                        name: 'TV',
-                        description: 'Smart TV',
-                    },
-                    currency: 'mxn',
-                    unit_amount: 2000,
-                },
-                quantity: 1,
-            }
-        ],
-        mode: 'payment',
-    })
-
-    return res.json(session);
-    /**
-     
-    const { productos, userId } = req.body;
-
-    // Calcular el total en centavos de MXN
-    const totalAmount = productos.reduce((acc, producto) => {
-        return acc + producto.Precio * (producto.selectedCantidad || 1);
-    }, 0) * 100; // Stripe maneja los montos en centavos
+    const { productos } = req.body; // Recibir los productos desde el cuerpo de la solicitud
 
     try {
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: totalAmount,
-            currency: 'mxn',
+        // Crear una lista de items basada en los productos enviados desde el carrito
+        const lineItems = productos.map((producto) => ({
+            price_data: {
+                currency: 'mxn',
+                product_data: {
+                    name: producto.Nombre,
+                    description: producto.Descripcion, // Asegúrate de que 'Descripcion' esté disponible en tu producto
+                },
+                unit_amount: Math.round(producto.Precio * 100), // Stripe maneja precios en centavos
+            },
+            quantity: producto.selectedCantidad || 1, // Utiliza la cantidad seleccionada o 1 por defecto
+        }));
+
+        const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
+            line_items: lineItems,
+            mode: 'payment',
+            success_url: `http://localhost:3000/ShopCart`, // URL de éxito
+            cancel_url: `http://localhost:3000/Cancel`,   // URL de cancelación
         });
 
-        res.send({
-            clientSecret: paymentIntent.client_secret,
-        });
+        return res.json({ id: session.id });
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        console.error('Error creating payment session:', error);
+        res.status(500).json({ error: 'Failed to create payment session' });
     }
-     */
 });
+
 // Endpoint para registrar un usuario
 app.post('/registerUser', async (req, res) => {
     try {
